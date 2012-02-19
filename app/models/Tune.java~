@@ -1,0 +1,23 @@
+package models;
+
+import java.util.*;
+import javax.persistence.*;
+
+import play.db.jpa.*;
+
+import nwcfile.NwcFile;
+
+@Entity
+public class Tune extends Model {
+  public String title;
+  public Date lastModifAt;
+
+  public Tune(String title) {
+    this.title = title;
+    this.lastModifAt = new Date();
+  }
+
+  public Tune(NwcFile nwcFile) {
+    this.title = nwcFile.getTitle();
+  }
+}

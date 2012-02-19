@@ -1,0 +1,37 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+#{ifErrors}
+<p class="error">
+  #{error "nwcfile" /}
+</p>
+#{/ifErrors}
+
+#{if tunes.size()}
+    
+<div class="tunes">
+  <h3>Tunes available :</h3>
+  <ul>
+  #{list items:tunes, as:'tune'}
+  <li>
+    <a href="@{Application.show(tune.id)}">${tune.title}</a>
+  </li>
+  #{/list}
+  </ul>
+</div>
+        
+#{/if}
+ 
+#{else}
+    <div class="empty">
+        No tune available.
+    </div>
+#{/else}
+
+<div class="addNwc">
+  <h3>Import nwc file :</h3>
+  <form action="@{Application.uploadNwc()}" method="POST" enctype="multipart/form-data">
+    <input type="file" id="nwc" name="nwc" />
+    <input type="submit" value="Add file" />
+  </form>
+</div>
