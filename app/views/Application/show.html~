@@ -1,5 +1,0 @@
-#{extends 'main.html' /}
-#{set title:post.title /}
-
-#{display post:post, as:'full' /}
-
