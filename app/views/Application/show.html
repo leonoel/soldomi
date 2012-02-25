@@ -1,6 +1,17 @@
 #{extends 'main.html' /}
 #{set title:tune.title /}
 
+#{script 'jquery-1.7.1.min.js' /}
+#{script 'vexflow-free.js' /}
+#{script 'notewar.js' /}
+
+<script type="text/javascript">
+$(document).ready(function() {
+  NoteWar.init($("#tuneRenderer").get(0), '/jsonapi/tunes/${tune.id}');
+});
+</script>
+
+
 <h3>${tune.title}</h3>
 
-
+<canvas id="tuneRenderer" width=1000 height=600></canvas>
