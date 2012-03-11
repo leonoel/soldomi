@@ -6,6 +6,7 @@ import play.mvc.*;
 import java.util.*;
 
 import models.*;
+import utils.nwc.*;
 import java.io.*;
 
 import nwcfile.*;
@@ -23,16 +24,22 @@ public class Application extends Controller {
   }
 
   public static void uploadNwc(File nwc) {
-    try {
-      NwcFileReader reader = new NwcFileReader(new FileInputStream(nwc));
-      NwcFile nwcfile = new NwcFile().unmarshall(reader);
-      new Tune().fromNwc(nwcfile).save();
-    } catch (NwcFileException e) {
-      validation.addError("nwcfile", "Error parsing nwc file.");
+    if (nwc == null) {
+      validation.addError("nwcfile", "Please select a file.");
       validation.keep();
-    } catch (FileNotFoundException e) {
-      validation.addError("nwcfile", "Error opening nwc file.");
-      validation.keep();
+    } else {
+      try {
+	NwcFileReader reader = new NwcFileReader(new FileInputStream(nwc));
+	NwcFile nwcfile = new NwcFile().unmarshall(reader);
+	Tune tune = new NwcFileImporter(nwcfile).toTune();
+	tune.save();
+      } catch (NwcFileException e) {
+	validation.addError("nwcfile", "Error parsing nwc file.");
+	validation.keep();
+      } catch (FileNotFoundException e) {
+	validation.addError("nwcfile", "Error opening nwc file.");
+	validation.keep();
+      }
     }
     index();
   }
