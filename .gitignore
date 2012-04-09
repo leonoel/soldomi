@@ -1,4 +1,5 @@
 *~
+*.BAK
 tmp
 logs
 project/project
