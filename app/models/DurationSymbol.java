@@ -10,13 +10,13 @@ public enum DurationSymbol {
   HALF (32),
   WHOLE (64);
 
-  private long m_sixtyFourths;
+  private Integer m_sixtyFourths;
 
-  private DurationSymbol(long sixtyFourths) {
+  private DurationSymbol(Integer sixtyFourths) {
     m_sixtyFourths = sixtyFourths;
   }
 
-  public long toSixtyFourths() {
+  public Integer toSixtyFourths() {
     return m_sixtyFourths;
   }
 }

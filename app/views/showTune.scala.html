@@ -1,0 +1,20 @@
+@(tune: Tune)
+
+@main("NoteWar - " + tune.title) {
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.7.1.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/vexflow-free.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/notewar.js")"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  NoteWar.init($("#tuneRenderer").get(0), '/jsonapi/tunes/@(tune.id)');
+});
+</script>
+
+
+<h3>@(tune.title)</h3>
+
+<canvas id="tuneRenderer" width=1000 height=600></canvas>
+
+}

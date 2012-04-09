@@ -1,44 +1,44 @@
 package models;
 
 import java.util.*;
+import play.db.ebean.*;
+import play.data.validation.Constraints.*;
 import javax.persistence.*;
-
-import play.db.jpa.*;
 
 @Entity
 public class Measure extends Model {
 
+  public static Finder<Long, Measure> find = new Finder(Long.class,
+							Measure.class);
+
+  @Id
+  public Long id;
+
   @ManyToOne
   public Tune tune;
 
-  @OneToMany(mappedBy="measure",
-	     cascade=CascadeType.ALL)
-  public List<Segment> segments; 
+  public Integer relativePosition;
 
   @Enumerated(EnumType.STRING)
   public DurationSymbol beatValue;
 
-  public long beatCount; 
-
-  /*
-   * From beginning of tune
-   * Unit : measures
-   */
-  public long relativePosition;
+  public Integer beatCount; 
 
   /*
    * From beginning of tune
    * Unit : 64ths
    */
-  public long absolutePosition;
+  public Integer absolutePosition;
 
-  public Measure(Tune tune) {
+  @OneToMany(mappedBy="measure")
+  public List<Segment> segments = new ArrayList<Segment>();
+
+  public Measure(Tune tune, Integer relativePosition) {
     this.tune = tune;
-    this.relativePosition = 0;
+    this.relativePosition = relativePosition;
     this.absolutePosition = 0;
     this.beatCount = 0;
     this.beatValue = DurationSymbol.UNDEFINED;
-    this.segments = new ArrayList<Segment>();
   }
 
 }

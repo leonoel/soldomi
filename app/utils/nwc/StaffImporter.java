@@ -8,7 +8,7 @@ class StaffImporter {
   private final NwcFileImporter m_nwcFileImporter;
   private final Staff m_staff;
   private final nwcfile.Staff m_nwcStaff;
-  private long m_time;
+  private Integer m_time;
   private Clef m_clef;
   private Iterator<nwcfile.SymbolContainer> m_symbolContainerIterator;
 
@@ -29,9 +29,10 @@ class StaffImporter {
       case NOTE: {
 	nwcfile.Segment nwcSegment = (nwcfile.Segment) symbolContainer.getSymbol();
 	DurationSymbol durationSymbol = toDurationSymbol(nwcSegment.getDuration());
-	Segment segment = new Segment(m_staff, measure);
-	m_staff.segments.add(segment);
+	Segment segment = new Segment(m_nwcFileImporter.getTune(), m_staff, measure);
+	m_nwcFileImporter.getTune().segments.add(segment);
 	measure.segments.add(segment);
+	m_staff.segments.add(segment);
 	segment.rest = false;
 	segment.clef = m_clef;
 	segment.pitch = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
@@ -43,9 +44,10 @@ class StaffImporter {
       case REST: {
 	nwcfile.Segment nwcSegment = (nwcfile.Segment) symbolContainer.getSymbol();
 	DurationSymbol durationSymbol = toDurationSymbol(nwcSegment.getDuration());
-	Segment segment = new Segment(m_staff, measure);
-	m_staff.segments.add(segment);
+	Segment segment = new Segment(m_nwcFileImporter.getTune(), m_staff, measure);
+	m_nwcFileImporter.getTune().segments.add(segment);
 	measure.segments.add(segment);
+	m_staff.segments.add(segment);
 	segment.rest = true;
 	segment.absolutePosition = m_time;
 	segment.durationSymbol = durationSymbol;
@@ -55,7 +57,7 @@ class StaffImporter {
       case TIME_SIGNATURE: {
 	nwcfile.TimeSignature nwcTimeSignature = (nwcfile.TimeSignature) symbolContainer.getSymbol();
 	m_nwcFileImporter.addTimeSignature(new TimeSignature(m_time,
-							     nwcTimeSignature.getBeatCount(),
+							     Integer.valueOf(nwcTimeSignature.getBeatCount()),
 							     toDurationSymbol(nwcTimeSignature.getBeatValue())));
 	break;
       }
@@ -84,7 +86,7 @@ class StaffImporter {
     return m_staff;
   }
 
-  public long getTime() {
+  public Integer getTime() {
     return m_time;
   }
 

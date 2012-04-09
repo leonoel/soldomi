@@ -53,16 +53,14 @@ public class NwcFileImporter {
   }
 
   private void addAllSymbols() {
-    m_currentMeasure = new Measure(m_tune);
-    m_currentMeasure.relativePosition = 0;
+    m_currentMeasure = new Measure(m_tune, 0);
     m_currentMeasure.absolutePosition = 0;
 
     while(isSymbolLeft()) {
       stepLatestStaff();
       if (areStavesSynchronized()) {
 	m_tune.measures.add(m_currentMeasure);
-	m_currentMeasure = new Measure(m_tune);
-	m_currentMeasure.relativePosition = m_tune.measures.size();
+	m_currentMeasure = new Measure(m_tune, m_tune.measures.size());
 	m_currentMeasure.absolutePosition = absoluteTime();
       }
     }
@@ -74,10 +72,10 @@ public class NwcFileImporter {
     TimeSignature currentTs = null;
     TimeSignature nextTs = it.hasNext() ? it.next() : null;
     for (Measure measure : m_tune.measures) {
-      long position = measure.absolutePosition;
-      long duration = 0;
+      int position = measure.absolutePosition;
+      int duration = 0;
       for (Segment segment : measure.segments) {
-	long endPosition = segment.getRelativePosition() + segment.getDuration();
+	int endPosition = segment.getRelativePosition() + segment.getDuration();
 	if (duration < endPosition) {
 	  duration = endPosition;
 	}
@@ -94,7 +92,7 @@ public class NwcFileImporter {
 	measure.beatValue = currentTs.beatValue;
       } else {
 	DurationSymbol beatValue = DurationSymbol.SIXTY_FOURTH;
-	long beatCount = duration;
+	int beatCount = duration;
 	while(beatCount % 2 == 0 && beatValue.ordinal() < DurationSymbol.QUARTER.ordinal()) {
 	  beatCount = beatCount >> 1;
 	  beatValue = DurationSymbol.values()[beatValue.ordinal() + 1];
@@ -114,7 +112,7 @@ public class NwcFileImporter {
   }
 
   private void stepLatestStaff() {
-    long minTime = 0;
+    int minTime = 0;
     StaffImporter staffToStep = null;
     for (StaffImporter staff : m_staves) {
       if (staff.isSymbolLeft()) {
@@ -128,7 +126,7 @@ public class NwcFileImporter {
   }
 
   private boolean areStavesSynchronized() {
-    long time = absoluteTime();
+    int time = absoluteTime();
     for (StaffImporter staff : m_staves) {
       if (staff.isSymbolLeft() && time != staff.getTime()) {
 	return false;
@@ -137,8 +135,8 @@ public class NwcFileImporter {
     return true;
   }
 
-  private long absoluteTime() {
-    long time = 0;
+  private int absoluteTime() {
+    int time = 0;
     for (StaffImporter staff : m_staves) {
       if (time < staff.getTime()) {
 	time = staff.getTime();

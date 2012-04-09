@@ -3,11 +3,11 @@ package utils.nwc;
 import models.*;
 
 class TimeSignature implements Comparable<TimeSignature> {
-  public final Long position;
-  public final Long beatCount;
+  public final Integer position;
+  public final Integer beatCount;
   public final DurationSymbol beatValue;
-  public TimeSignature(long _position,
-		       long _beatCount,
+  public TimeSignature(Integer _position,
+		       Integer _beatCount,
 		       DurationSymbol _beatValue) {
     position = _position;
     beatCount = _beatCount;

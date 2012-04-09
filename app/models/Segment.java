@@ -1,23 +1,28 @@
 package models;
 
 import java.util.*;
+import play.db.ebean.*;
+import play.data.validation.Constraints.*;
 import javax.persistence.*;
-
-import play.db.jpa.*;
 
 @Entity
 public class Segment extends Model {
+  public static Finder<Long, Segment> find = new Finder(Long.class,
+							Segment.class);
+
+  @Id
+  public Long id;
 
   @ManyToOne
   public Tune tune;
 
-  @ManyToOne
+  @ManyToOne(cascade=CascadeType.ALL)
   public Staff staff;
 
-  @ManyToOne
+  @ManyToOne(cascade=CascadeType.ALL)
   public Measure measure;
 
-  public boolean rest;
+  public Boolean rest;
 
   @Enumerated(EnumType.STRING)
   public Clef clef;
@@ -25,26 +30,26 @@ public class Segment extends Model {
   @Embedded
   public Pitch pitch;
   
-  public long absolutePosition;
+  public Integer absolutePosition;
 
   @Enumerated(EnumType.STRING)
   public DurationSymbol durationSymbol;
 
-  public Segment(Staff staff, Measure measure) {
-    this.tune = staff.tune;
+  public Segment(Tune tune, Staff staff, Measure measure) {
+    this.tune = tune;
     this.staff = staff;
     this.measure = measure;
   }
 
-  public long getRelativePitch() {
+  public Integer getRelativePitch() {
     return Pitch.interval(this.clef.getPitch(), this.pitch);
   }
 
-  public long getDuration() {
+  public Integer getDuration() {
     return this.durationSymbol.toSixtyFourths();
   }
 
-  public long getRelativePosition() {
+  public Integer getRelativePosition() {
     return this.absolutePosition - this.measure.absolutePosition;
   }
 }

@@ -1,47 +1,51 @@
 package controllers;
 
-import play.*;
-import play.mvc.*;
-
 import java.util.*;
-
-import models.*;
-import utils.nwc.*;
 import java.io.*;
 
-import nwcfile.*;
+import play.*;
+import play.mvc.*;
+import play.mvc.Http.*;
+import play.mvc.Http.MultipartFormData.*;
+
+import models.*;
+import views.html.*;
+import utils.nwc.*;
 
 public class Application extends Controller {
-
-  public static void index() {
-    List<Tune> tunes = Tune.find("order by lastModifAt desc").from(0).fetch(10);
-    render(tunes);
+  
+  public static Result index() {
+    return redirect(routes.Application.tunes());
   }
 
-  public static void show(long id) {
-    Tune tune = Tune.findById(id);
-    render(tune);
+  public static Result tunes() {
+    return ok(views.html.index.render(Tune.all()));
   }
 
-  public static void uploadNwc(File nwc) {
-    if (nwc == null) {
-      validation.addError("nwcfile", "Please select a file.");
-      validation.keep();
-    } else {
+  public static Result importNwc() {
+    MultipartFormData body = request().body().asMultipartFormData();
+    FilePart nwc = body.getFile("nwc");
+    if (nwc != null) {
+      String fileName = nwc.getFilename();
+      String contentType = nwc.getContentType(); 
+      File file = nwc.getFile();
       try {
-	NwcFileReader reader = new NwcFileReader(new FileInputStream(nwc));
-	NwcFile nwcfile = new NwcFile().unmarshall(reader);
+	nwcfile.NwcFileReader reader = new nwcfile.NwcFileReader(new FileInputStream(file));
+	nwcfile.NwcFile nwcfile = new nwcfile.NwcFile().unmarshall(reader);
 	Tune tune = new NwcFileImporter(nwcfile).toTune();
 	tune.save();
-      } catch (NwcFileException e) {
-	validation.addError("nwcfile", "Error parsing nwc file.");
-	validation.keep();
+      } catch (nwcfile.NwcFileException e) {
+	flash("error", "Error parsing nwc file.");
       } catch (FileNotFoundException e) {
-	validation.addError("nwcfile", "Error opening nwc file.");
-	validation.keep();
+	flash("error", "Error opening nwc file.");
       }
+    } else {
+      flash("error", "Missing file");
     }
-    index();
+    return redirect(routes.Application.tunes());
   }
 
+  public static Result showTune(Long id) {
+    return ok(views.html.showTune.render(Tune.find.ref(id)));
+  }
 }

@@ -29,7 +29,7 @@ public final class Pitch {
     return new Pitch(Note.values()[ordinal], octave);
   }
 
-  public static int interval(Pitch from, Pitch to) {
+  public static Integer interval(Pitch from, Pitch to) {
     return (to.note.ordinal() - from.note.ordinal()) +
       Note.values().length * (to.octave - from.octave);
   }
