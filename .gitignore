@@ -1,3 +1,6 @@
 *~
-tmp/
-
+tmp
+logs
+project/project
+project/target
+target
