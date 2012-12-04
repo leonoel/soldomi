@@ -6,7 +6,7 @@
 GET     /                                                                          controllers.Application.index()
 GET     /tunes/                                                                    controllers.Application.tunes()
 POST    /tunes/fromnwc/                                                            controllers.Application.importNwc()
-GET	/tunes/:id/                                                                controllers.Application.showTune(id: Long)
+GET	/tunes/:tuneId/                                                            controllers.Application.showTune(tuneId: Long)
 
 # Json
 GET	/jsonapi/tunes/$id<[0-9]+>                                                 controllers.JsonApi.tuneInfo(id: Long)

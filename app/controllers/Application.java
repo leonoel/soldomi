@@ -46,6 +46,6 @@ public class Application extends Controller {
   }
 
   public static Result showTune(Long id) {
-    return ok(views.html.showTune.render(Tune.find.ref(id)));
+    return ok(views.html.showTune.render(Tune.find.select("title, measures, staves").where().eq("id", id).findUnique()));//Tune.find.ref(id)));
   }
 }
