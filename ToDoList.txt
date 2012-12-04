@@ -1,0 +1,4 @@
+- Rassembler Repository Notewar et NwcFile. En cas de conflit, Notewar doit être maître. 
+- Check bug sur Crescent\ City\ 2.nwc. 
+
+
