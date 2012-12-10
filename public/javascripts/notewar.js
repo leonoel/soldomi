@@ -5,7 +5,7 @@ NoteWar.init = function(canvas,
     NoteWar.canvas = canvas;
     NoteWar.url = url;
     NoteWar.renderer = new Vex.Flow.Renderer(canvas,
-				     Vex.Flow.Renderer.Backends.CANVAS);
+					     Vex.Flow.Renderer.Backends.CANVAS);
     NoteWar.ctx = NoteWar.renderer.getContext();
 
     $.getJSON(url, NoteWar.renderTune);
