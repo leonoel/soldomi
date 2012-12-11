@@ -11,6 +11,7 @@ import org.codehaus.jackson.node.*;
 public class JsonApi extends Controller {
 
   public static Result tuneInfo(Long id) {
+//    Tune tune = Tune.find.select("title, measures, staves, timeSignatures, keySignatures").where().eq("id", id).findUnique();
     Tune tune = Tune.find.select("title, measures, staves").where().eq("id", id).findUnique();
     ObjectNode tuneJson = Json.newObject();
     tuneJson.put("title", tune.title);
@@ -19,6 +20,8 @@ public class JsonApi extends Controller {
     for (Staff staff : tune.staves) {
       ObjectNode staffJson = Json.newObject();
       staffJson.put("name", staff.name);
+//      staffJson.put("timeSignature", staff.timeSignatures);
+//      staffJson.put("keySignature", staff.keySignatures);
       stavesJson.put(staff.id.toString(), staffJson);
     }
     return ok(tuneJson);
@@ -35,6 +38,7 @@ public class JsonApi extends Controller {
       .findList();
 
     ObjectNode measureJson = Json.newObject();
+    measureJson.put("measureId",measurePosition);
     measureJson.put("absolutePosition", measure.absolutePosition);
     measureJson.put("beatCount", measure.beatCount);
     measureJson.put("beatValue", measure.beatValue.name());
@@ -44,6 +48,7 @@ public class JsonApi extends Controller {
       segmentJson.put("staffId", segment.staff.id);
       segmentJson.put("clef", segment.clef.name());
       segmentJson.put("note", segment.pitch.note.name());
+      segmentJson.put("accidental", segment.accidental);
       segmentJson.put("octave", segment.pitch.octave);
       segmentJson.put("relativePosition", segment.getRelativePosition());
       segmentJson.put("durationSymbol", segment.durationSymbol.name());

@@ -36,6 +36,7 @@ class StaffImporter {
 	segment.rest = false;
 	segment.clef = m_clef;
 	segment.pitch = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
+        segment.accidental = nwcSegment.getAccidental().ordinal(); 
 	segment.absolutePosition = m_time;
 	segment.durationSymbol = durationSymbol;
 	m_time += durationSymbol.toSixtyFourths();

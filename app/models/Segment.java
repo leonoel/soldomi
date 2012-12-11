@@ -29,6 +29,8 @@ public class Segment extends Model {
 
   @Embedded
   public Pitch pitch;
+
+  public Integer accidental;
   
   public Integer absolutePosition;
 
