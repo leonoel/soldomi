@@ -11,7 +11,6 @@ import org.codehaus.jackson.node.*;
 public class JsonApi extends Controller {
 
   public static Result tuneInfo(Long id) {
-//    Tune tune = Tune.find.select("title, measures, staves, timeSignatures, keySignatures").where().eq("id", id).findUnique();
     Tune tune = Tune.find.select("title, measures, staves").where().eq("id", id).findUnique();
     ObjectNode tuneJson = Json.newObject();
     tuneJson.put("title", tune.title);
@@ -20,8 +19,6 @@ public class JsonApi extends Controller {
     for (Staff staff : tune.staves) {
       ObjectNode staffJson = Json.newObject();
       staffJson.put("name", staff.name);
-//      staffJson.put("timeSignature", staff.timeSignatures);
-//      staffJson.put("keySignature", staff.keySignatures);
       stavesJson.put(staff.id.toString(), staffJson);
     }
     return ok(tuneJson);

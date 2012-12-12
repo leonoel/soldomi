@@ -132,6 +132,12 @@ NoteWar.formatDuration = function(segment) {
     case "QUARTER":
 	duration = "q";
 	break;
+    case "EIGHTH":
+	duration = "8";
+	break; 
+    case "SIXTEENTH":
+	duration = "16";
+	break; 
     default:
 	break;
     }
