@@ -27,19 +27,20 @@ class StaffImporter {
       nwcfile.SymbolContainer symbolContainer = m_symbolContainerIterator.next();
       switch(symbolContainer.getType()) {
       case NOTE: {
-	nwcfile.Segment nwcSegment = (nwcfile.Segment) symbolContainer.getSymbol();
+	nwcfile.Segment nwcSegment    = (nwcfile.Segment) symbolContainer.getSymbol();
 	DurationSymbol durationSymbol = toDurationSymbol(nwcSegment.getDuration());
-	Segment segment = new Segment(m_nwcFileImporter.getTune(), m_staff, measure);
+	Segment segment               = new Segment(m_nwcFileImporter.getTune(), m_staff, measure);
 	m_nwcFileImporter.getTune().segments.add(segment);
 	measure.segments.add(segment);
 	m_staff.segments.add(segment);
-	segment.rest = false;
-	segment.clef = m_clef;
-	segment.pitch = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
-        segment.accidental = nwcSegment.getAccidental().ordinal(); 
+	segment.rest             = false;
+	segment.clef             = m_clef;
+	segment.pitch            = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
+        segment.accidental       = nwcSegment.getAccidental().ordinal(); 
+        segment.dot              = nwcSegment.getDots().ordinal(); 
 	segment.absolutePosition = m_time;
-	segment.durationSymbol = durationSymbol;
-	m_time += durationSymbol.toSixtyFourths();
+	segment.durationSymbol   = durationSymbol;
+	m_time                  += durationSymbol.toSixtyFourths();
 	break;
       }
       case REST: {
@@ -49,10 +50,14 @@ class StaffImporter {
 	m_nwcFileImporter.getTune().segments.add(segment);
 	measure.segments.add(segment);
 	m_staff.segments.add(segment);
-	segment.rest = true;
+	segment.rest             = true;
+	segment.clef             = m_clef;
+        segment.pitch            = m_clef.getPitch();
+	segment.accidental       = 5;
+ 	segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol = durationSymbol;
-	m_time += durationSymbol.toSixtyFourths();
+	segment.durationSymbol   = durationSymbol;
+	m_time                  += durationSymbol.toSixtyFourths();
 	break;
       }
       case TIME_SIGNATURE: {

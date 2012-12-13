@@ -31,6 +31,8 @@ public class Segment extends Model {
   public Pitch pitch;
 
   public Integer accidental;
+
+  public Integer dot;
   
   public Integer absolutePosition;
 

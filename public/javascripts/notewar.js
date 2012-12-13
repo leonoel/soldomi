@@ -25,6 +25,7 @@ NoteWar.renderTune = function(tune) {
       for (var staffId in tune.staves) {
         lines[staffId]  = {};
         lines[staffId]["vexFlowStaff"] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth); 
+	if(measureId == tune.measureCount -1) lines[staffId].vexFlowStaff.setEndBarType(Vex.Flow.Barline.type.END);
         yCoor += lineHeight;
       }
       NoteWar.tune.measures[measureId]["lines"] = lines;
@@ -87,6 +88,11 @@ NoteWar.renderMeasure = function(measure) {
 NoteWar.addOrnament = function(vexFlowSegment,JSONSegment)
 {
   if(JSONSegment.accidental < 5) vexFlowSegment.addAccidental(0,new Vex.Flow.Accidental(NoteWar.StringFromAccidental(JSONSegment.accidental)));
+  var nDots = JSONSegment.dot;
+  while(nDots>0) {
+   vexFlowSegment.addDotToAll();
+   nDots--;
+  }
 }
 
 NoteWar.StringFromAccidental = function(accidental)
@@ -138,10 +144,16 @@ NoteWar.formatDuration = function(segment) {
     case "SIXTEENTH":
 	duration = "16";
 	break; 
+    case "THIRTY_SECOND":
+	duration = "32";
+	break; 
+    case "SIXTY_FOURTH":
+	duration = "64";
+	break; 
     default:
 	break;
     }
-    var rest = (segment.rest == "true") ? "r" : "";
+    var rest = segment.rest ? "r" : "";
     return duration + rest;
 }
 

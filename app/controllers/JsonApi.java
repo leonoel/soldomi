@@ -35,21 +35,22 @@ public class JsonApi extends Controller {
       .findList();
 
     ObjectNode measureJson = Json.newObject();
-    measureJson.put("measureId",measurePosition);
+    measureJson.put("measureId",        measurePosition);
     measureJson.put("absolutePosition", measure.absolutePosition);
-    measureJson.put("beatCount", measure.beatCount);
-    measureJson.put("beatValue", measure.beatValue.name());
+    measureJson.put("beatCount",        measure.beatCount);
+    measureJson.put("beatValue",        measure.beatValue.name());
     ArrayNode segmentsJson = measureJson.putArray("segments");
     for (Segment segment : segments) {
       ObjectNode segmentJson = Json.newObject();
-      segmentJson.put("staffId", segment.staff.id);
-      segmentJson.put("clef", segment.clef.name());
-      segmentJson.put("note", segment.pitch.note.name());
-      segmentJson.put("accidental", segment.accidental);
-      segmentJson.put("octave", segment.pitch.octave);
+      segmentJson.put("staffId",          segment.staff.id);
+      segmentJson.put("clef",             segment.clef.name());
+      segmentJson.put("note",             segment.pitch.note.name());
+      segmentJson.put("accidental",       segment.accidental);
+      segmentJson.put("dot",              segment.dot);
+      segmentJson.put("octave",           segment.pitch.octave);
       segmentJson.put("relativePosition", segment.getRelativePosition());
-      segmentJson.put("durationSymbol", segment.durationSymbol.name());
-      segmentJson.put("rest", segment.rest);
+      segmentJson.put("durationSymbol",   segment.durationSymbol.name());
+      segmentJson.put("rest",             segment.rest);
       segmentsJson.add(segmentJson);
     }
     return ok(measureJson);
