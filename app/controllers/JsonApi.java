@@ -39,6 +39,7 @@ public class JsonApi extends Controller {
     measureJson.put("absolutePosition", measure.absolutePosition);
     measureJson.put("beatCount",        measure.beatCount);
     measureJson.put("beatValue",        measure.beatValue.name());
+    measureJson.put("keySignature",     measure.keySignature); //measure.keySignature.getMajorScale());
     ArrayNode segmentsJson = measureJson.putArray("segments");
     for (Segment segment : segments) {
       ObjectNode segmentJson = Json.newObject();

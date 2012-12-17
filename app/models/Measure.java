@@ -24,6 +24,9 @@ public class Measure extends Model {
 
   public Integer beatCount; 
 
+//  public KeySignature keySignature;
+  public String keySignature;
+
   /*
    * From beginning of tune
    * Unit : 64ths

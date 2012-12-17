@@ -9,6 +9,7 @@ create table measure (
   relative_position         integer,
   beat_value                varchar(13),
   beat_count                integer,
+  key_signature             varchar(255),
   absolute_position         integer,
   constraint ck_measure_beat_value check (beat_value in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','SIXTEENTH','EIGHTH','QUARTER','HALF','WHOLE')),
   constraint pk_measure primary key (id))

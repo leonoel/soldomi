@@ -36,6 +36,7 @@ public class NwcFileImporter {
 
     addAllSymbols();
     adjustTimeSignatures();
+    propagateKeySignatures();
 
     return m_tune;
   }
@@ -99,6 +100,26 @@ public class NwcFileImporter {
 	}
 	measure.beatCount = beatCount;
 	measure.beatValue = beatValue;
+      }
+    }
+  }
+
+  private void propagateKeySignatures() {
+    Collections.sort(m_keySignatures);
+    Iterator<KeySignature> it = m_keySignatures.iterator();
+    KeySignature currentKs = null;
+    KeySignature nextKs = it.hasNext() ? it.next() : null;
+    for (Measure measure : m_tune.measures) {
+      int position = measure.absolutePosition;
+      while(nextKs != null && nextKs.position <= position) {
+	currentKs = nextKs;
+	nextKs = it.hasNext() ? it.next() : null;
+      }
+
+      if (currentKs != null) {
+	measure.keySignature = currentKs.getMajorScale();
+      } else {
+	measure.keySignature = "C"; //new KeySignature(position);
       }
     }
   }

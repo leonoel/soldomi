@@ -62,9 +62,15 @@ NoteWar.renderMeasure = function(measure) {
      
     
     for (var staffId in NoteWar.tune.staves) {
+      var vexFlowStaff = NoteWar.tune.measures[0].lines[staffId].vexFlowStaff;
       if(measureId == 0) { // First Measure, set keySignature
-        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.width += 0;
-        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.addClef(NoteWar.tune.measures[measureId].lines[staffId].segments[0].clef).addTimeSignature(NoteWar.timeSignature(measure));
+        vexFlowStaff.width += 0;
+        vexFlowStaff.addClef(NoteWar.tune.measures[measureId].lines[staffId].segments[0].clef);
+	vexFlowStaff.addKeySignature(measure.keySignature);
+	vexFlowStaff.addTimeSignature(NoteWar.timeSignature(measure));
+
+//        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.width += 0;
+//        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.addClef(NoteWar.tune.measures[measureId].lines[staffId].segments[0].clef).addTimeSignature(NoteWar.timeSignature(measure));
       }
       NoteWar.tune.measures[measureId].lines[staffId].vexFlowStaff.setContext(NoteWar.ctx).draw();
       Vex.Flow.Formatter.FormatAndDraw(NoteWar.ctx,
@@ -87,7 +93,9 @@ NoteWar.renderMeasure = function(measure) {
 
 NoteWar.addOrnament = function(vexFlowSegment,JSONSegment)
 {
-  if(JSONSegment.accidental < 5) vexFlowSegment.addAccidental(0,new Vex.Flow.Accidental(NoteWar.StringFromAccidental(JSONSegment.accidental)));
+  if(JSONSegment.accidental < 5) {
+	vexFlowSegment.addAccidental(0,new Vex.Flow.Accidental(NoteWar.StringFromAccidental(JSONSegment.accidental)));
+  }
   var nDots = JSONSegment.dot;
   while(nDots>0) {
    vexFlowSegment.addDotToAll();

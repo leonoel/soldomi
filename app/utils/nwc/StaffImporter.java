@@ -69,9 +69,7 @@ class StaffImporter {
       }
       case KEY_SIGNATURE: {
 	nwcfile.KeySignature nwcKeySignature = (nwcfile.KeySignature) symbolContainer.getSymbol();
-	KeySignature ks = new KeySignature(m_time);
-	// TODO
-	m_nwcFileImporter.addKeySignature(ks);
+	m_nwcFileImporter.addKeySignature(new KeySignature(m_time,nwcKeySignature.getFlats(),nwcKeySignature.getSharps()));
 	break;
       }
       case CLEF: {
