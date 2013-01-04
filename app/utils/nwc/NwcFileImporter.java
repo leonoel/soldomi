@@ -55,7 +55,7 @@ public class NwcFileImporter {
 
   private void addAllSymbols() {
     m_currentMeasure = new Measure(m_tune, 0);
-    m_currentMeasure.absolutePosition = 0;
+    m_currentMeasure.absolutePosition = 0.0f;
 
     while(isSymbolLeft()) {
       stepLatestStaff();
@@ -73,10 +73,10 @@ public class NwcFileImporter {
     TimeSignature currentTs = null;
     TimeSignature nextTs = it.hasNext() ? it.next() : null;
     for (Measure measure : m_tune.measures) {
-      int position = measure.absolutePosition;
-      int duration = 0;
+      float position = measure.absolutePosition;
+      float duration = 0.0f;
       for (Segment segment : measure.segments) {
-	int endPosition = segment.getRelativePosition() + segment.getDuration();
+	float endPosition = segment.getRelativePosition() + segment.getDuration();
 	if (duration < endPosition) {
 	  duration = endPosition;
 	}
@@ -93,7 +93,7 @@ public class NwcFileImporter {
 	measure.beatValue = currentTs.beatValue;
       } else {
 	DurationSymbol beatValue = DurationSymbol.SIXTY_FOURTH;
-	int beatCount = duration;
+	int beatCount = (int) Math.round(duration*16); // 16 SIXTY_FOURTH in a QUARTER
 	while(beatCount % 2 == 0 && beatValue.ordinal() < DurationSymbol.QUARTER.ordinal()) {
 	  beatCount = beatCount >> 1;
 	  beatValue = DurationSymbol.values()[beatValue.ordinal() + 1];
@@ -110,7 +110,7 @@ public class NwcFileImporter {
     KeySignature currentKs = null;
     KeySignature nextKs = it.hasNext() ? it.next() : null;
     for (Measure measure : m_tune.measures) {
-      int position = measure.absolutePosition;
+      float position = measure.absolutePosition;
       while(nextKs != null && nextKs.position <= position) {
 	currentKs = nextKs;
 	nextKs = it.hasNext() ? it.next() : null;
@@ -133,7 +133,7 @@ public class NwcFileImporter {
   }
 
   private void stepLatestStaff() {
-    int minTime = 0;
+    float minTime = 0.0f;
     StaffImporter staffToStep = null;
     for (StaffImporter staff : m_staves) {
       if (staff.isSymbolLeft()) {
@@ -147,17 +147,17 @@ public class NwcFileImporter {
   }
 
   private boolean areStavesSynchronized() {
-    int time = absoluteTime();
+    float time = absoluteTime();
     for (StaffImporter staff : m_staves) {
-      if (staff.isSymbolLeft() && time != staff.getTime()) {
+      if (staff.isSymbolLeft() && Math.abs(time-staff.getTime())>0.01f) {
 	return false;
       }
     }
     return true;
   }
 
-  private int absoluteTime() {
-    int time = 0;
+  private float absoluteTime() {
+    float time = 0.0f;
     for (StaffImporter staff : m_staves) {
       if (time < staff.getTime()) {
 	time = staff.getTime();

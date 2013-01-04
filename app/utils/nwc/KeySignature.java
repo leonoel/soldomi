@@ -1,17 +1,17 @@
 package utils.nwc;
 
 class KeySignature implements Comparable<KeySignature> {
-  public final Integer position;               // Segment Position
+  public final float position;               // Segment Position
   public final int[] accidentals = new int[7]; // A,B,C,D,E,F,G; -1=Flat,0=Neutral,1=Sharp
   public String majorScale,minorScale;         // Corresponding Scale
   
-  public KeySignature(int _position) { // When no accidental vector is provided, major C is assumed
+  public KeySignature(float _position) { // When no accidental vector is provided, major C is assumed
     position = _position;
     for(int i=0;i<7;i++) {accidentals[i]=0;};
     majorScale = "C"; minorScale = "A"; return;
   }
  
-  public KeySignature(int _position,boolean[] _flats, boolean[] _sharps) {
+  public KeySignature(float _position,boolean[] _flats, boolean[] _sharps) {
     position = _position;
     int countFlats=0, countSharps=0;
     for(int i=0;i<7;i++) if(_flats[i]) {accidentals[i]--;countFlats++;};
@@ -46,7 +46,13 @@ class KeySignature implements Comparable<KeySignature> {
 
   @Override
   public int compareTo(KeySignature ts) {
-    return position.compareTo(ts.position);
+    float relativePosition = position - ts.position;
+    if(Math.abs(relativePosition) < 0.01) return 0;
+    if(relativePosition           < 0.0 ) return (int) Math.round(Math.ceil(relativePosition));
+    else                                  return (int) Math.round(Math.floor(relativePosition));
+
+//    return Math.abs(relativePosition)<0.01 ? 0 : (relativePosition>0.0f) ? Math.ceil(relativePosition): Math.floor(relativePosition);
+//    return 0; //position.compareTo(ts.position);
   }
 
   public String getMajorScale() {

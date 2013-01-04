@@ -34,7 +34,7 @@ public class Segment extends Model {
 
   public Integer dot;
   
-  public Integer absolutePosition;
+  public float absolutePosition;
 
   @Enumerated(EnumType.STRING)
   public DurationSymbol durationSymbol;
@@ -53,7 +53,7 @@ public class Segment extends Model {
     return this.durationSymbol.toSixtyFourths();
   }
 
-  public Integer getRelativePosition() {
+  public float getRelativePosition() {
     return this.absolutePosition - this.measure.absolutePosition;
   }
 }

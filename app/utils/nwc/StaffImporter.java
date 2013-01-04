@@ -8,7 +8,7 @@ class StaffImporter {
   private final NwcFileImporter m_nwcFileImporter;
   private final Staff m_staff;
   private final nwcfile.Staff m_nwcStaff;
-  private Integer m_time;
+  private float m_time;
   private Clef m_clef;
   private Iterator<nwcfile.SymbolContainer> m_symbolContainerIterator;
 
@@ -17,7 +17,7 @@ class StaffImporter {
     m_nwcStaff = nwcStaff;
     m_staff = new Staff(nwcFileImporter.getTune());
     m_staff.name = nwcStaff.getName();
-    m_time = 0;
+    m_time = 0.0f;
     m_clef = Clef.TREBLE;
     m_symbolContainerIterator = nwcStaff.getSymbols().iterator();
   }
@@ -40,7 +40,7 @@ class StaffImporter {
         segment.dot              = nwcSegment.getDots().ordinal(); 
 	segment.absolutePosition = m_time;
 	segment.durationSymbol   = durationSymbol;
-	m_time                  += durationSymbol.toSixtyFourths();
+	m_time                  += durationSymbol.toFloat();
 	break;
       }
       case REST: {
@@ -57,7 +57,7 @@ class StaffImporter {
  	segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
 	segment.durationSymbol   = durationSymbol;
-	m_time                  += durationSymbol.toSixtyFourths();
+	m_time                  += durationSymbol.toFloat();
 	break;
       }
       case TIME_SIGNATURE: {
@@ -90,7 +90,7 @@ class StaffImporter {
     return m_staff;
   }
 
-  public Integer getTime() {
+  public float getTime() {
     return m_time;
   }
 

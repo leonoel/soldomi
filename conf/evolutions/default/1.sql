@@ -6,12 +6,12 @@
 create table measure (
   id                        bigint not null,
   tune_id                   bigint,
-  relative_position         integer,
+  measure_id                integer,
   beat_value                varchar(13),
   beat_count                integer,
   key_signature             varchar(255),
-  absolute_position         integer,
-  constraint ck_measure_beat_value check (beat_value in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','SIXTEENTH','EIGHTH','QUARTER','HALF','WHOLE')),
+  absolute_position         float,
+  constraint ck_measure_beat_value check (beat_value in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','SIXTEENTH','TWELFTH','EIGHTH','SEVENTH','SIXTH','FIFTH','QUARTER','THIRD','HALF','WHOLE')),
   constraint pk_measure primary key (id))
 ;
 
@@ -26,11 +26,11 @@ create table segment (
   octave                    integer,
   accidental                integer,
   dot                       integer,
-  absolute_position         integer,
+  absolute_position         float,
   duration_symbol           varchar(13),
   constraint ck_segment_clef check (clef in ('UNDEFINED','TREBLE','BASS','ALTO','TENOR')),
   constraint ck_segment_note check (note in ('C','D','E','F','G','A','B')),
-  constraint ck_segment_duration_symbol check (duration_symbol in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','SIXTEENTH','EIGHTH','QUARTER','HALF','WHOLE')),
+  constraint ck_segment_duration_symbol check (duration_symbol in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','SIXTEENTH','TWELFTH','EIGHTH','SEVENTH','SIXTH','FIFTH','QUARTER','THIRD','HALF','WHOLE')),
   constraint pk_segment primary key (id))
 ;
 

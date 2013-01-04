@@ -55,7 +55,8 @@ NoteWar.renderMeasure = function(measure) {
 	    new Vex.Flow.StaveNote(
 		{ keys: [NoteWar.formatKeys(segment)],
 		  duration: NoteWar.formatDuration(segment),
-		  clef: NoteWar.formatClef(segment)
+		  clef: NoteWar.formatClef(segment),
+//		  stem_direction : -1
 		}));
 	NoteWar.addOrnament(NoteWar.tune.measures[measureId].lines[staffId].segments[i],segment);
     }

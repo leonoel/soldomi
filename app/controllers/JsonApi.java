@@ -27,10 +27,10 @@ public class JsonApi extends Controller {
   public static Result measureInfo(Long tuneId, Integer measurePosition) {
     Measure measure = Measure.find.fetch("tune", "id")
       .select("beatCount, beatValue, absolutePosition, segments")
-      .where().eq("tune.id", tuneId).eq("relativePosition", measurePosition).findUnique();
-    List<Segment> segments = Segment.find.fetch("measure", "relativePosition").fetch("tune", "id")
+      .where().eq("tune.id", tuneId).eq("measureID", measurePosition).findUnique();
+    List<Segment> segments = Segment.find.fetch("measure", "measureID").fetch("tune", "id")
       .where()
-      .eq("measure.relativePosition", measurePosition)
+      .eq("measure.measureID", measurePosition)
       .eq("tune.id", tuneId)
       .findList();
 

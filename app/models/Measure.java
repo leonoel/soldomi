@@ -17,7 +17,7 @@ public class Measure extends Model {
   @ManyToOne
   public Tune tune;
 
-  public Integer relativePosition;
+  public Integer measureID;
 
   @Enumerated(EnumType.STRING)
   public DurationSymbol beatValue;
@@ -29,19 +29,22 @@ public class Measure extends Model {
 
   /*
    * From beginning of tune
-   * Unit : 64ths
+   * Unit : 1.0f is a QUARTER. e.g.
+   * In 4/4, each measure contains 4.0f Units
+   * In 6/8, each measure contains 3.0f Units
+   * In 7/8, each measure contains 3.5f Units
    */
-  public Integer absolutePosition;
+  public float absolutePosition;
 
   @OneToMany(mappedBy="measure")
   public List<Segment> segments = new ArrayList<Segment>();
 
-  public Measure(Tune tune, Integer relativePosition) {
-    this.tune = tune;
-    this.relativePosition = relativePosition;
-    this.absolutePosition = 0;
-    this.beatCount = 0;
-    this.beatValue = DurationSymbol.UNDEFINED;
+  public Measure(Tune tune, Integer measureID) {
+    this.tune             = tune;
+    this.measureID        = measureID;
+    this.absolutePosition = 0.0f;
+    this.beatCount        = 0;
+    this.beatValue        = DurationSymbol.UNDEFINED;
   }
 
 }
