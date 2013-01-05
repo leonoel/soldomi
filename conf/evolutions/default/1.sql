@@ -7,11 +7,11 @@ create table measure (
   id                        bigint not null,
   tune_id                   bigint,
   measure_id                integer,
-  beat_value                varchar(13),
+  beat_value                varchar(20),
   beat_count                integer,
   key_signature             varchar(255),
   absolute_position         float,
-  constraint ck_measure_beat_value check (beat_value in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','SIXTEENTH','TWELFTH','EIGHTH','SEVENTH','SIXTH','FIFTH','QUARTER','THIRD','HALF','WHOLE')),
+  constraint ck_measure_beat_value check (beat_value in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','DOTTED_THIRTY_SECOND','SIXTEENTH','TWELFTH','DOTTED_SIXTEENTH','D_DOTTED_SIXTEENTH','EIGHTH','SEVENTH','SIXTH','DOTTED_EIGHTH','FIFTH','D_DOTTED_EIGHTH','QUARTER','THIRD','DOTTED_QUARTER','D_DOTTED_QUARTER','HALF','DOTTED_HALF','D_DOTTED_HALF','WHOLE')),
   constraint pk_measure primary key (id))
 ;
 
@@ -27,10 +27,10 @@ create table segment (
   accidental                integer,
   dot                       integer,
   absolute_position         float,
-  duration_symbol           varchar(13),
+  duration_symbol           varchar(20),
   constraint ck_segment_clef check (clef in ('UNDEFINED','TREBLE','BASS','ALTO','TENOR')),
   constraint ck_segment_note check (note in ('C','D','E','F','G','A','B')),
-  constraint ck_segment_duration_symbol check (duration_symbol in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','SIXTEENTH','TWELFTH','EIGHTH','SEVENTH','SIXTH','FIFTH','QUARTER','THIRD','HALF','WHOLE')),
+  constraint ck_segment_duration_symbol check (duration_symbol in ('UNDEFINED','SIXTY_FOURTH','THIRTY_SECOND','TWENTY_FOURTH','DOTTED_THIRTY_SECOND','SIXTEENTH','TWELFTH','DOTTED_SIXTEENTH','D_DOTTED_SIXTEENTH','EIGHTH','SEVENTH','SIXTH','DOTTED_EIGHTH','FIFTH','D_DOTTED_EIGHTH','QUARTER','THIRD','DOTTED_QUARTER','D_DOTTED_QUARTER','HALF','DOTTED_HALF','D_DOTTED_HALF','WHOLE')),
   constraint pk_segment primary key (id))
 ;
 

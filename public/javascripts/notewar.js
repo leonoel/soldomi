@@ -141,40 +141,37 @@ NoteWar.formatDuration = function(segment) {
     case "WHOLE": // Ronde
 	duration = "w";
 	break;    
-    case "HALF":  // Blanche
+    case "HALF":          // Blanche
+    case "DOTTED_HALF":   // Blanche Pointee
+    case "D_DOTTED_HALF": // Blanche Dble Pointee
+    case "THIRD":         // Triolet de Blanche
 	duration = "h";
 	break;
-    case "THIRD": // Triolet de Blanche
-	duration = "h";
-	break;
-    case "QUARTER": // Noire
+    case "QUARTER":          // Noire
+    case "DOTTED_QUARTER":   // Noire Pointee
+    case "D_DOTTED_QUARTER": // Noire Dble Pointe
+    case "FIFTH":            // Quintolet de Noire
+    case "SIXTH":            // Triolet de Noire
+    case "SEVENTH":          // Septolet de Noire
 	duration = "q";
 	break;
-    case "FIFTH": // Quintolet de Noire
-	duration = "q";
-	break;
-    case "SIXTH":  // Triolet de Noire
-	duration = "q";
-	break;
-    case "SEVENTH": // Septolet de Noire
-	duration = "q";
-	break;
-    case "EIGHTH":  // Croche
+    case "EIGHTH":           // Croche
+    case "DOTTED_EIGHTH":    // Croche Pointee
+    case "D_DOTTED_EIGHTH":  // Croche Dble Pointee
+    case "TWELFTH":          // Triolet de Croche
 	duration = "8";
 	break; 
-    case "TWELFTH":  // Triolet de Croche
-	duration = "8";
-	break; 
-    case "SIXTEENTH": // Double Croche
+    case "SIXTEENTH":          // Double Croche
+    case "DOTTED_SIXTEENTH":   // Double Croche Pointee
+    case "D_DOTTED_SIXTEENTH": // Double Croche Double pointee
+    case "TWENTY_FOURTH":      // Triolet de Double
 	duration = "16";
 	break; 
-    case "TWENTY_FOURTH": // Triolet de Double
-	duration = "16";
-	break; 
-    case "THIRTY_SECOND":
+    case "THIRTY_SECOND":        // Triple Croche
+    case "DOTTED_THIRTY_SECOND": // Triple Croche pointee
 	duration = "32";
 	break; 
-    case "SIXTY_FOURTH":
+    case "SIXTY_FOURTH":   // Quadruple Croche
 	duration = "64";
 	break; 
     default:

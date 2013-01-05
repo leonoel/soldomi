@@ -39,8 +39,9 @@ class StaffImporter {
         segment.accidental       = nwcSegment.getAccidental().ordinal(); 
         segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = 
-		nwcSegment.isTriplet()?toTriplet(durationSymbol):durationSymbol;
+	segment.durationSymbol   = (segment.dot>0) ? addDots(durationSymbol,segment.dot):
+				     nwcSegment.isTriplet() ? toTriplet(durationSymbol):
+				       durationSymbol;
 	m_time                  += segment.durationSymbol.toFloat();
 	roundTime();
 	break;
@@ -56,10 +57,11 @@ class StaffImporter {
 	segment.clef             = m_clef;
         segment.pitch            = m_clef.getPitch();
 	segment.accidental       = 5;
- 	segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = 
-		nwcSegment.isTriplet()?toTriplet(durationSymbol):durationSymbol;
+ 	segment.dot              = nwcSegment.getDots().ordinal();
+	segment.durationSymbol   = (segment.dot>0) ? addDots(durationSymbol,segment.dot):
+				     nwcSegment.isTriplet() ? toTriplet(durationSymbol):
+				       durationSymbol;
 	m_time                  += segment.durationSymbol.toFloat();
 	break;
       }
@@ -161,6 +163,46 @@ class StaffImporter {
     }
   }
 
+  private DurationSymbol addDots(DurationSymbol duration,Integer nDots) {
+    switch(duration) {
+      case HALF: {
+	switch(nDots) {
+	  case 1: return DurationSymbol.DOTTED_HALF;// Blanche Pointee
+	  case 2: return DurationSymbol.D_DOTTED_HALF;// Blanche Dble Pointee
+	  default://TODO Exception Error
+	}
+      }
+      case QUARTER: {
+	switch(nDots) {
+	  case 1: return DurationSymbol.DOTTED_QUARTER;// Noire Pointee
+	  case 2: return DurationSymbol.D_DOTTED_QUARTER;// Noire Dble Pointee
+	  default://TODO Exception Error
+	}
+      }
+      case EIGHTH: {
+	switch(nDots) {
+	  case 1: return DurationSymbol.DOTTED_EIGHTH;// Croche Pointee
+	  case 2: return DurationSymbol.D_DOTTED_EIGHTH;// Croche Dble Pointee
+	  default://TODO Exception Error
+	}
+      }
+      case SIXTEENTH: {
+	switch(nDots) {
+	  case 1: return DurationSymbol.DOTTED_SIXTEENTH;// Double Croche Pointee
+	  case 2: return DurationSymbol.D_DOTTED_SIXTEENTH;// Double Croche Dble Pointee
+	  default://TODO Exception Error
+	}
+      }
+      case THIRTY_SECOND: {
+	switch(nDots) {
+	  case 1: return DurationSymbol.DOTTED_THIRTY_SECOND;// Triple Croche Pointee
+	  default://TODO Exception Error
+	}
+      }
+      default: //TODO Exception Error
+    }
+    return duration;
+  }
   private DurationSymbol toTriplet(DurationSymbol duration) {
     switch(duration) {
       case HALF:      return DurationSymbol.THIRD;         // Triolet de Blanche
