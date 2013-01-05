@@ -26,7 +26,6 @@ create table segment (
   octave                    integer,
   accidental                integer,
   dot                       integer,
-  triplet                   integer,
   absolute_position         float,
   duration_symbol           varchar(13),
   constraint ck_segment_clef check (clef in ('UNDEFINED','TREBLE','BASS','ALTO','TENOR')),

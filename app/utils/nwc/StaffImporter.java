@@ -39,9 +39,8 @@ class StaffImporter {
         segment.accidental       = nwcSegment.getAccidental().ordinal(); 
         segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = (nwcSegment.getTriplet().ordinal()>0) 
-					? toTriplet(durationSymbol) 
-					: durationSymbol;
+	segment.durationSymbol   = 
+		nwcSegment.isTriplet()?toTriplet(durationSymbol):durationSymbol;
 	m_time                  += segment.durationSymbol.toFloat();
 	roundTime();
 	break;
@@ -59,9 +58,8 @@ class StaffImporter {
 	segment.accidental       = 5;
  	segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = (nwcSegment.getTriplet().ordinal()>0) 
-					? toTriplet(durationSymbol)
-					: durationSymbol;
+	segment.durationSymbol   = 
+		nwcSegment.isTriplet()?toTriplet(durationSymbol):durationSymbol;
 	m_time                  += segment.durationSymbol.toFloat();
 	break;
       }
