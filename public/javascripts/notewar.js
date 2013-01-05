@@ -138,19 +138,37 @@ NoteWar.timeSignature = function(measure) {
 NoteWar.formatDuration = function(segment) {
     var duration;
     switch(segment.durationSymbol) {
-    case "WHOLE":
+    case "WHOLE": // Ronde
 	duration = "w";
-	break;
-    case "HALF":
+	break;    
+    case "HALF":  // Blanche
 	duration = "h";
 	break;
-    case "QUARTER":
+    case "THIRD": // Triolet de Blanche
+	duration = "h";
+	break;
+    case "QUARTER": // Noire
 	duration = "q";
 	break;
-    case "EIGHTH":
+    case "FIFTH": // Quintolet de Noire
+	duration = "q";
+	break;
+    case "SIXTH":  // Triolet de Noire
+	duration = "q";
+	break;
+    case "SEVENTH": // Septolet de Noire
+	duration = "q";
+	break;
+    case "EIGHTH":  // Croche
 	duration = "8";
 	break; 
-    case "SIXTEENTH":
+    case "TWELFTH":  // Triolet de Croche
+	duration = "8";
+	break; 
+    case "SIXTEENTH": // Double Croche
+	duration = "16";
+	break; 
+    case "TWENTY_FOURTH": // Triolet de Double
 	duration = "16";
 	break; 
     case "THIRTY_SECOND":

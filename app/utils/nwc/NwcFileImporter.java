@@ -149,7 +149,7 @@ public class NwcFileImporter {
   private boolean areStavesSynchronized() {
     float time = absoluteTime();
     for (StaffImporter staff : m_staves) {
-      if (staff.isSymbolLeft() && Math.abs(time-staff.getTime())>0.01f) {
+      if (staff.isSymbolLeft() && Math.abs(time-staff.getTime())>0.01) {
 	return false;
       }
     }

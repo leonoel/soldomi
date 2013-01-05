@@ -19,7 +19,7 @@ public enum DurationSymbol {
   private Integer m_sixtyFourths;
   private float   m_duration;
 
-  private DurationSymbol(Integer sixtyFourths,float duration) {
+  private DurationSymbol(Integer sixtyFourths,float duration)   {
     m_sixtyFourths = sixtyFourths;
     m_duration     = duration;
   }
@@ -31,5 +31,4 @@ public enum DurationSymbol {
   public float toFloat() {
     return m_duration;
   }
-  
 }

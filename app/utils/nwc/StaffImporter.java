@@ -37,10 +37,13 @@ class StaffImporter {
 	segment.clef             = m_clef;
 	segment.pitch            = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
         segment.accidental       = nwcSegment.getAccidental().ordinal(); 
-        segment.dot              = nwcSegment.getDots().ordinal(); 
+        segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = durationSymbol;
-	m_time                  += durationSymbol.toFloat();
+	segment.durationSymbol   = (nwcSegment.getTriplet().ordinal()>0) 
+					? toTriplet(durationSymbol) 
+					: durationSymbol;
+	m_time                  += segment.durationSymbol.toFloat();
+	roundTime();
 	break;
       }
       case REST: {
@@ -56,8 +59,10 @@ class StaffImporter {
 	segment.accidental       = 5;
  	segment.dot              = nwcSegment.getDots().ordinal();
 	segment.absolutePosition = m_time;
-	segment.durationSymbol   = durationSymbol;
-	m_time                  += durationSymbol.toFloat();
+	segment.durationSymbol   = (nwcSegment.getTriplet().ordinal()>0) 
+					? toTriplet(durationSymbol)
+					: durationSymbol;
+	m_time                  += segment.durationSymbol.toFloat();
 	break;
       }
       case TIME_SIGNATURE: {
@@ -84,6 +89,11 @@ class StaffImporter {
       }
       }
     }
+  }
+
+  public void roundTime() {
+    if(Math.abs(m_time - Math.round(m_time))<0.01) 
+	m_time = Math.round(m_time);
   }
 
   public Staff getStaff() {
@@ -116,7 +126,7 @@ class StaffImporter {
       return DurationSymbol.UNDEFINED;
     }
   }
-
+  
   private DurationSymbol toDurationSymbol(nwcfile.Segment.Duration duration) {
     switch(duration) {
     case WHOLE:
@@ -151,5 +161,16 @@ class StaffImporter {
     default:
       return Clef.UNDEFINED;
     }
+  }
+
+  private DurationSymbol toTriplet(DurationSymbol duration) {
+    switch(duration) {
+      case HALF:      return DurationSymbol.THIRD;         // Triolet de Blanche
+      case QUARTER:   return DurationSymbol.SIXTH;         // Triolet de Noire
+      case EIGHTH:    return DurationSymbol.TWELFTH;       // Triolet de Croche
+      case SIXTEENTH: return DurationSymbol.TWENTY_FOURTH; // Triolet de Double
+      default: //TODO Exception Error
+    }
+    return duration;
   }
 }
