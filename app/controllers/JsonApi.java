@@ -1,17 +1,23 @@
 package controllers;
 
 import java.util.*;
+import java.io.*;
 import play.*;
 import play.mvc.*;
 import models.*;
 
 import play.libs.Json;
 import org.codehaus.jackson.node.*;
+import org.codehaus.jackson.map.*;
 
 public class JsonApi extends Controller {
 
-  public static Result tuneInfo(Long id) {
+  public static Result tuneInfo(Long id) throws IOException {
     Tune tune = Tune.find.select("title, measures, staves").where().eq("id", id).findUnique();
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+
     ObjectNode tuneJson = Json.newObject();
     tuneJson.put("title", tune.title);
     tuneJson.put("measureCount", tune.measures.size());
@@ -21,10 +27,14 @@ public class JsonApi extends Controller {
       staffJson.put("name", staff.name);
       stavesJson.put(staff.id.toString(), staffJson);
     }
-    return ok(tuneJson);
+
+    StringWriter writer = new StringWriter();
+    mapper.writeValue(writer, tuneJson); 
+
+    return ok(writer.toString());
   }
 
-  public static Result measureInfo(Long tuneId, Integer measurePosition) {
+  public static Result measureInfo(Long tuneId, Integer measurePosition) throws IOException {
     Measure measure = Measure.find.fetch("tune", "id")
       .select("beatCount, beatValue, absolutePosition, segments")
       .where().eq("tune.id", tuneId).eq("measureID", measurePosition).findUnique();
@@ -33,6 +43,9 @@ public class JsonApi extends Controller {
       .eq("measure.measureID", measurePosition)
       .eq("tune.id", tuneId)
       .findList();
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 
     ObjectNode measureJson = Json.newObject();
     measureJson.put("measureId",        measurePosition);
@@ -54,7 +67,12 @@ public class JsonApi extends Controller {
       segmentJson.put("rest",             segment.rest);
       segmentsJson.add(segmentJson);
     }
-    return ok(measureJson);
+
+
+    StringWriter writer = new StringWriter();
+    mapper.writeValue(writer, measureJson); 
+
+    return ok(writer.toString());
   }
 
 }
