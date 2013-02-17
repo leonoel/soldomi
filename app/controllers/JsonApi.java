@@ -2,9 +2,11 @@ package controllers;
 
 import java.util.*;
 import java.io.*;
+import java.text.*;
 import play.*;
 import play.mvc.*;
 import models.*;
+import dao.*;
 
 import play.libs.Json;
 import org.codehaus.jackson.node.*;
@@ -12,57 +14,64 @@ import org.codehaus.jackson.map.*;
 
 public class JsonApi extends Controller {
 
-  public static Result tuneInfo(Long id) throws IOException {
-    Tune tune = Tune.find.select("title, measures, staves").where().eq("id", id).findUnique();
+    public static Result tuneInfo(Long id) throws IOException {
+	TuneDao.Tune tune = TuneDao.get(id);
 
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+	//	Tune tune = Tune.find.select("name, measures, staffs").where().eq("id", id).findUnique();
 
-    ObjectNode tuneJson = Json.newObject();
-    tuneJson.put("title", tune.title);
-    tuneJson.put("measureCount", tune.measures.size());
-    ObjectNode stavesJson = tuneJson.putObject("staves");
-    for (Staff staff : tune.staves) {
-      ObjectNode staffJson = Json.newObject();
-      staffJson.put("name", staff.name);
-      stavesJson.put(staff.id.toString(), staffJson);
-    }
+	ObjectMapper mapper = new ObjectMapper();
+	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 
-    StringWriter writer = new StringWriter();
-    mapper.writeValue(writer, tuneJson); 
+	ObjectNode tuneJson = Json.newObject();
+	tuneJson.put("name", tune.name());
+	tuneJson.put("lastModified", new SimpleDateFormat().format(tune.lastModified()));
+	tuneJson.put("systCount", tune.systCount());
 
-    return ok(writer.toString());
+	//	tuneJson.put("blockCount", tune.blocks.size());
+
+	//	ObjectNode staffsJson = tuneJson.putObject("staffs");
+	//	for (Staff staff : tune.staffs) {
+	//	    ObjectNode staffJson = Json.newObject();
+	//	    staffJson.put("name", staff.name);
+	//	    staffsJson.put(staff.id.toString(), staffJson);
+	//	}
+
+	StringWriter writer = new StringWriter();
+	mapper.writeValue(writer, tuneJson); 
+
+	return ok(writer.toString());
   }
 
-  public static Result measureInfo(Long tuneId, Integer measurePosition) throws IOException {
-    Measure measure = Measure.find.fetch("tune", "id")
+  public static Result blockInfo(Long tuneId, Integer position) throws IOException {
+      // TODO
+      /*
+    Block block = Block.find.fetch("tune", "id")
       .select("beatCount, beatValue, absolutePosition, segments")
-      .where().eq("tune.id", tuneId).eq("measureID", measurePosition).findUnique();
-    List<Segment> segments = Segment.find.fetch("measure", "measureID").fetch("tune", "id")
+      .where().eq("tune.id", tuneId).eq("position", position).findUnique();
+    List<Segment> segments = Segment.find.fetch("measure", "position").fetch("tune", "id")
       .where()
-      .eq("measure.measureID", measurePosition)
+      .eq("block.position", position)
       .eq("tune.id", tuneId)
       .findList();
 
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 
-    ObjectNode measureJson = Json.newObject();
-    measureJson.put("measureId",        measurePosition);
-    measureJson.put("absolutePosition", measure.absolutePosition);
-    measureJson.put("beatCount",        measure.beatCount);
-    measureJson.put("beatValue",        measure.beatValue.name());
-    measureJson.put("keySignature",     measure.keySignature); //measure.keySignature.getMajorScale());
-    ArrayNode segmentsJson = measureJson.putArray("segments");
+    ObjectNode blockJson = Json.newObject();
+    blockJson.put("blockId",          position);
+    blockJson.put("startTime",        block.startTime);
+    blockJson.put("beatCount",        block.beatCount);
+    blockJson.put("beatValue",        block.beatValue.name());
+    ArrayNode segmentsJson = blockJson.putArray("segments");
     for (Segment segment : segments) {
       ObjectNode segmentJson = Json.newObject();
-      segmentJson.put("staffId",          segment.staff.id);
+      segmentJson.put("staffId",          segment.symbol.staff.id);
       segmentJson.put("clef",             segment.clef.name());
       segmentJson.put("note",             segment.pitch.note.name());
-      segmentJson.put("accidental",       segment.accidental);
-      segmentJson.put("dot",              segment.dot);
+      segmentJson.put("accidental",       segment.accidental.name());
+      segmentJson.put("dotCount",              segment.dotCount);
       segmentJson.put("octave",           segment.pitch.octave);
-      segmentJson.put("relativePosition", segment.getRelativePosition());
+      segmentJson.put("relativePosition", segment.relativePosition());
       segmentJson.put("durationSymbol",   segment.durationSymbol.name());
       segmentJson.put("rest",             segment.rest);
       segmentsJson.add(segmentJson);
@@ -70,9 +79,11 @@ public class JsonApi extends Controller {
 
 
     StringWriter writer = new StringWriter();
-    mapper.writeValue(writer, measureJson); 
+    mapper.writeValue(writer, blockJson); 
 
     return ok(writer.toString());
+      */
+      return ok("");
   }
 
 }

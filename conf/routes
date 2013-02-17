@@ -4,13 +4,14 @@
 
 # Home page
 GET     /                                                                          controllers.Application.index()
-GET     /tunes/                                                                    controllers.Application.tunes()
-POST    /tunes/fromnwc/                                                            controllers.Application.importNwc()
-GET	/tunes/:tuneId/                                                            controllers.Application.showTune(tuneId: Long)
+GET     /tunes                                                                     controllers.Application.tunes()
+GET	/tune/$tuneId<[0-9]+>                                                      controllers.Application.showTune(tuneId: Long)
+GET     /tune/$tuneId<[0-9]+>/json                                                 controllers.JsonApi.tuneInfo(tuneId: Long)
+POST    /tune/new                                                                  controllers.Application.createNew()
+POST    /tune/fromnwc                                                              controllers.Application.importNwc()
+POST    /tune/$tuneId<[0-9]+>/delete                                               controllers.Application.deleteTune(tuneId: Long)
 
-# Json
-GET	/jsonapi/tunes/$id<[0-9]+>                                                 controllers.JsonApi.tuneInfo(id: Long)
-GET 	/jsonapi/tunes/$tuneId<[0-9]+>/measures/$measurePosition<[0-9]+>           controllers.JsonApi.measureInfo(tuneId: Long, measurePosition: java.lang.Integer)
+GET 	/jsonapi/tunes/$tuneId<[0-9]+>/blocks/$blockPosition<[0-9]+>               controllers.JsonApi.blockInfo(tuneId: Long, blockPosition: java.lang.Integer)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -1,7 +1,7 @@
 @(tunes: List[Tune])
 @import helper._
 
-@main("NoteWar") {
+@main("SolDoMi") {
 
 @if(flash.get("error")) {
 <p class="error">
@@ -15,13 +15,22 @@
     <div class="tunes">
       <ul>
 	@for(tune <- tunes) {
-		     <li>
-		       <a href="@routes.Application.showTune(tune.id)">@tune.title</a>
-		     </li>
+          <li>
+	    @form(action = routes.Application.deleteTune(tune.id)) {
+              <a href="@routes.Application.showTune(tune.id)">@tune.name</a> <input type="submit" value="Delete" />
+	    }
+	  </li>
 	}
       </ul>
     </div>
   }
+  <div class="addNew">
+    <h2>Create new tune :</h2>
+    @form(action = routes.Application.createNew) {
+      <input type="text" name="name"/>
+      <input type="submit" value="Create" />
+    }
+  </div>
   <div class="addNwc">
     <h2>Import nwc file :</h2>
     @form(action = routes.Application.importNwc, 'enctype -> "multipart/form-data") {

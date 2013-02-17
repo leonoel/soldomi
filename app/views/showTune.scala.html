@@ -1,6 +1,6 @@
 @(tune: Tune) 
 
-@main("NoteWar - " + tune.title) {
+@main("NoteWar - " + tune.name) {
 
 <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("javascripts/vexflow.js")"></script>
@@ -13,7 +13,7 @@ $(document).ready(function() {
 </script>
 
 
-<h3>@tune.title</h3>
+<h3>@tune.name</h3>
 
 <canvas id="tuneRenderer" width=18000 height=600></canvas>
 
