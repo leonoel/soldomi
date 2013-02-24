@@ -15,9 +15,7 @@ import org.codehaus.jackson.map.*;
 public class JsonApi extends Controller {
 
     public static Result tuneInfo(Long id) throws IOException {
-	TuneDao.Tune tune = TuneDao.get(id);
-
-	//	Tune tune = Tune.find.select("name, measures, staffs").where().eq("id", id).findUnique();
+	Tune tune = Tune.get.execute(id);
 
 	ObjectMapper mapper = new ObjectMapper();
 	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
@@ -25,16 +23,32 @@ public class JsonApi extends Controller {
 	ObjectNode tuneJson = Json.newObject();
 	tuneJson.put("name", tune.name());
 	tuneJson.put("lastModified", new SimpleDateFormat().format(tune.lastModified()));
-	tuneJson.put("systCount", tune.systCount());
 
-	//	tuneJson.put("blockCount", tune.blocks.size());
+	ArrayNode systsJson = tuneJson.putArray("systs");
+	for (Syst syst : tune.systs()) {
+	    ObjectNode systJson = systsJson.addObject();
+	    systJson.put("id", syst.id());
+	    systJson.put("name", syst.name());
+	    ArrayNode staffsJson = systJson.putArray("staffs");
+	    for (Staff staff: syst.staffs()) {
+		ObjectNode staffJson = staffsJson.addObject();
+		staffJson.put("id", staff.id());
+		staffJson.put("name", staff.name());
+	    }
+	}
 
-	//	ObjectNode staffsJson = tuneJson.putObject("staffs");
-	//	for (Staff staff : tune.staffs) {
-	//	    ObjectNode staffJson = Json.newObject();
-	//	    staffJson.put("name", staff.name);
-	//	    staffsJson.put(staff.id.toString(), staffJson);
-	//	}
+	ArrayNode sectsJson = tuneJson.putArray("sects");
+	for (Sect sect : tune.sects()) {
+	    ObjectNode sectJson = sectsJson.addObject();
+	    sectJson.put("id", sect.id());
+	    sectJson.put("startTime", sect.startTime());
+	    ArrayNode blocksJson = sectJson.putArray("blocks");
+	    for (Block block : sect.blocks()) {
+		ObjectNode blockJson = blocksJson.addObject();
+		blockJson.put("id", block.id());
+		blockJson.put("startTime", block.startTime());
+	    }
+	}
 
 	StringWriter writer = new StringWriter();
 	mapper.writeValue(writer, tuneJson); 

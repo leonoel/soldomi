@@ -16,8 +16,8 @@
       <ul>
 	@for(tune <- tunes) {
           <li>
-	    @form(action = routes.Application.deleteTune(tune.id)) {
-              <a href="@routes.Application.showTune(tune.id)">@tune.name</a> <input type="submit" value="Delete" />
+	    @form(action = routes.HtmlApi.deleteTune(tune.id)) {
+              <a href="@routes.HtmlApi.showTune(tune.id)">@tune.name</a> <input type="submit" value="Delete" />
 	    }
 	  </li>
 	}
@@ -26,14 +26,14 @@
   }
   <div class="addNew">
     <h2>Create new tune :</h2>
-    @form(action = routes.Application.createNew) {
+    @form(action = routes.HtmlApi.createNew) {
       <input type="text" name="name"/>
       <input type="submit" value="Create" />
     }
   </div>
   <div class="addNwc">
     <h2>Import nwc file :</h2>
-    @form(action = routes.Application.importNwc, 'enctype -> "multipart/form-data") {
+    @form(action = routes.HtmlApi.importNwc, 'enctype -> "multipart/form-data") {
       <input type="file" name="nwc"/>
       <input type="submit" value="Upload" />
     }
