@@ -35,6 +35,25 @@ create table block (
   primary key (id)
 );
 
+create table symbol (
+  id                        bigint not null auto_increment,
+  staff_id                  bigint not null,
+  block_id                  bigint not null,
+  start_time                bigint,
+  symbol_type               varchar(255),
+  primary key (id)
+);
+
+create table segment (
+  id                        bigint not null auto_increment,
+  segment_id                bigint not null,
+  duration_type             varchar(255),
+  dot_count                 int,
+  pitch_note                varchar(255),
+  pitch_octave              int,
+  primary key (id)
+);
+
 # --- !Downs
 
 drop table if exists tune;
@@ -42,3 +61,5 @@ drop table if exists syst;
 drop table if exists staff;
 drop table if exists sect;
 drop table if exists block;
+drop table if exists symbol;
+drop table if exists segment;

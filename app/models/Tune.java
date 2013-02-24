@@ -5,6 +5,12 @@ import java.sql.*;
 import utils.DaoAction;
 
 public interface Tune {
+    Long id();
+    String name();
+    java.util.Date lastModified();
+    List<Syst> systs();
+    List<Sect> sects();
+
     DaoAction<Object, List<Tune>> getAll = new DaoAction<Object, List<Tune>>() {
 	@Override public List<Tune> doSql(Connection connection, Object object) throws SQLException {
 	    return Base.getAll(connection);
@@ -30,12 +36,6 @@ public interface Tune {
 	    return null;
 	}
     };
-
-    Long id();
-    String name();
-    java.util.Date lastModified();
-    List<Syst> systs();
-    List<Sect> sects();
 
     class Blank implements Tune {
 	private final String name;

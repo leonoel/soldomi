@@ -47,6 +47,7 @@ public interface Staff {
 
 	public static void deleteAllInTune(Connection connection,
 					   Long tuneId) throws SQLException {
+	    Symbol.Base.deleteAllInTune(connection, tuneId);
 	    PreparedStatement stat = connection.prepareStatement("delete from staff " +
 								 "where exists ( " +
 								 "select * from syst " +

@@ -1,14 +1,20 @@
 package utils;
 
-import javax.persistence.*;
-
-@Embeddable
 public final class Pitch {
   public enum Note {
-    C,D,E,F,G,A,B;
+      C("c"),
+      D("d"),
+      E("e"),
+      F("f"),
+      G("g"),
+      A("a"),
+      B("b");
+      public String baseValue;
+      private Note(String _baseValue) {
+	  baseValue = _baseValue;
+      }
   }
 
-  @Enumerated(EnumType.STRING)
   public Note note;
   public Integer octave;
 

@@ -56,6 +56,7 @@ public interface Block {
 
 	public static void deleteAllInTune(Connection connection,
 					   Long tuneId) throws SQLException {
+	    Symbol.Base.deleteAllInTune(connection, tuneId);
 	    PreparedStatement stat = connection.prepareStatement("delete from block " +
 								 "where exists ( " +
 								 "select * from sect " +
