@@ -1,6 +1,6 @@
 package utils.nwc;
 
-import dao.*;
+import models.*;
 import utils.*;
 import java.util.Date;
 import java.util.Iterator;
@@ -104,17 +104,15 @@ public class NwcFileImporter {
 	
     }
 
-    private final class Block implements NewTuneDao.Block {
+    private final class Block {
 	private final Long m_startTime;
 
 	public Block(Long startTime) {
 	    m_startTime = startTime;
 	}
-
-	@Override public Long startTime() { return m_startTime; }
     }
 
-    private final class Syst implements NewTuneDao.Syst {
+    private final class Syst {
     }
 
     private final nwcfile.NwcFile m_nwcFile;
@@ -139,8 +137,8 @@ public class NwcFileImporter {
 	propagateKeySignatures();
 
 	final String name = m_nwcFile.getTitle().length() == 0 ? "Untitled" : m_nwcFile.getTitle();
-	final List<NewTuneDao.Syst> systs = new ArrayList<NewTuneDao.Syst>();
-	final List<NewTuneDao.Block> blocks = new ArrayList<NewTuneDao.Block>();
+	final List<Syst> systs = new ArrayList<Syst>();
+	final List<Block> blocks = new ArrayList<Block>();
 
 	for (Syst syst : m_systs) {
 	    systs.add(syst);
@@ -150,11 +148,7 @@ public class NwcFileImporter {
 	    blocks.add(block);
 	}
 
-	return NewTuneDao.create(new NewTuneDao.Tune() {
-		@Override public String name() { return name; }
-		@Override public List<NewTuneDao.Syst> systs() { return systs; }
-		@Override public List<NewTuneDao.Block> blocks() { return blocks; }
-	    });
+	return null;
     }
 
     /*

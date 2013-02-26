@@ -5,8 +5,8 @@ import java.io.*;
 import java.text.*;
 import play.*;
 import play.mvc.*;
+
 import models.*;
-import dao.*;
 
 import play.libs.Json;
 import org.codehaus.jackson.node.*;
@@ -21,32 +21,32 @@ public class JsonApi extends Controller {
 	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 
 	ObjectNode tuneJson = Json.newObject();
-	tuneJson.put("name", tune.name());
-	tuneJson.put("lastModified", new SimpleDateFormat().format(tune.lastModified()));
+	tuneJson.put("name", tune.name);
+	tuneJson.put("lastModified", new SimpleDateFormat().format(tune.lastModified));
 
 	ArrayNode systsJson = tuneJson.putArray("systs");
-	for (Syst syst : tune.systs()) {
+	for (Syst syst : tune.systs) {
 	    ObjectNode systJson = systsJson.addObject();
-	    systJson.put("id", syst.id());
-	    systJson.put("name", syst.name());
+	    systJson.put("id", syst.id);
+	    systJson.put("name", syst.name);
 	    ArrayNode staffsJson = systJson.putArray("staffs");
-	    for (Staff staff: syst.staffs()) {
+	    for (Staff staff: syst.staffs) {
 		ObjectNode staffJson = staffsJson.addObject();
-		staffJson.put("id", staff.id());
-		staffJson.put("name", staff.name());
+		staffJson.put("id", staff.id);
+		staffJson.put("name", staff.name);
 	    }
 	}
 
 	ArrayNode sectsJson = tuneJson.putArray("sects");
-	for (Sect sect : tune.sects()) {
+	for (Sect sect : tune.sects) {
 	    ObjectNode sectJson = sectsJson.addObject();
-	    sectJson.put("id", sect.id());
-	    sectJson.put("startTime", sect.startTime());
+	    sectJson.put("id", sect.id);
+	    sectJson.put("startTime", sect.startTime);
 	    ArrayNode blocksJson = sectJson.putArray("blocks");
-	    for (Block block : sect.blocks()) {
+	    for (Block block : sect.blocks) {
 		ObjectNode blockJson = blocksJson.addObject();
-		blockJson.put("id", block.id());
-		blockJson.put("startTime", block.startTime());
+		blockJson.put("id", block.id);
+		blockJson.put("startTime", block.startTime);
 	    }
 	}
 

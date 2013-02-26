@@ -1,6 +1,7 @@
 package utils.nwc;
 
 import models.*;
+import utils.*;
 
 class TimeSignature implements Comparable<TimeSignature> {
   public final float position;

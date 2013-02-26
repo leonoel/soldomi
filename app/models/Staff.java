@@ -3,51 +3,55 @@ package models;
 import java.util.*;
 import java.sql.*;
 
-public interface Staff {
-    Long id();
-    String name();
+import utils.DaoAction;
 
-    public static class Base {
-	public static Long insert(Connection connection,
-				  Long systId,
-				  String name) throws SQLException {
+public class Staff {
+    public Long id;
+    public Syst syst;
+    public String name;
+
+    public static final DaoAction<Staff, Staff> insert = new DaoAction<Staff, Staff>() {
+	@Override public Staff doSql(Connection connection,
+				     Staff staff) throws SQLException {
 	    PreparedStatement stat = connection.prepareStatement("insert into staff values (null, ?, ?)");
-	    stat.setLong(1, systId);
-	    stat.setString(2, name);
+	    stat.setLong(1, staff.syst.id);
+	    stat.setString(2, staff.name);
 	    stat.executeUpdate();
 	    ResultSet resultSet = stat.getGeneratedKeys();
-	    if (resultSet.next()) {
-		return resultSet.getLong(1);
-	    } else {
+	    if (!resultSet.next()) {
 		throw new SQLException("Could not retrieve new staff id");
 	    }
+	    staff.id = resultSet.getLong(1);
+	    return staff;
 	}
+    };
 
-	public static List<Staff> getAllInSyst(Connection connection,
-					       Long systId) throws SQLException {
+    public static final DaoAction<Syst, List<Staff>> getAllInSyst = new DaoAction<Syst, List<Staff>>() {
+	@Override public List<Staff> doSql(Connection connection,
+					   Syst syst) throws SQLException {
 	    List<Staff> staffs = new ArrayList<Staff>();
 	    PreparedStatement stat = connection.prepareStatement(
 								 "select id, " +
 								 "name " +
 								 "from staff " +
 								 "where syst_id = ? ");
-	    stat.setLong(1, systId);
+	    stat.setLong(1, syst.id);
 	    ResultSet resultSet = stat.executeQuery();
 
 	    while (resultSet.next()) {
-		final Long staffId = resultSet.getLong("id");
-		final String staffName = resultSet.getString("name");
-		staffs.add(new Staff() {
-			@Override public Long id() { return staffId; }
-			@Override public String name() { return staffName; }
-		    });
+		Staff staff = new Staff();
+		staff.id = resultSet.getLong("id");
+		staff.name = resultSet.getString("name");
+		staffs.add(staff);
 	    }
 	    return staffs;
 	}
+    };
 
-	public static void deleteAllInTune(Connection connection,
-					   Long tuneId) throws SQLException {
-	    Symbol.Base.deleteAllInTune(connection, tuneId);
+    public static final DaoAction<Long, Object> deleteAllInTune = new DaoAction<Long, Object>() {
+	@Override public Object doSql(Connection connection,
+				      Long tuneId) throws SQLException {
+	    Symbol.deleteAllInTune.doSql(connection, tuneId);
 	    PreparedStatement stat = connection.prepareStatement("delete from staff " +
 								 "where exists ( " +
 								 "select * from syst " +
@@ -55,8 +59,9 @@ public interface Staff {
 								 "and syst.tune_id = ?)");
 	    stat.setLong(1, tuneId);
 	    stat.executeUpdate();
+	    return null;
 	}
-    }
+    };
 
 }
 

@@ -3,11 +3,13 @@ package models;
 import java.util.*;
 import java.sql.*;
 
-public interface Symbol {
+import utils.DaoAction;
 
-    public interface Position {
-	Long staffId();
-	Long blockId();
+public class Symbol {
+
+    public class Position {
+	Long staffId;
+	Long blockId;
     }
 
     public enum SymbolType {
@@ -26,54 +28,53 @@ public interface Symbol {
 	}
     }
 
-    Long id();
-    Position position();
-    Long startTime();
-    SymbolType symbolType();
+    public Long id;
+    public Position position;
+    public Long startTime;
+    public SymbolType symbolType;
 
-    class Base {
-	public static List<Symbol> getAll(Connection connection, final Position position) throws SQLException {
+    public static final DaoAction<Position, List<Symbol>> getAll = new DaoAction<Position, List<Symbol>>() {
+	@Override public List<Symbol> doSql(Connection connection, final Position position) throws SQLException {
 	    List<Symbol> symbols = new ArrayList<Symbol>();
 	    PreparedStatement stat = connection.prepareStatement("select id, start_time, symbol_type " +
 								 "from symbol " +
 								 "where staff_id = ? " +
 								 "and block_id = ? ");
-	    stat.setLong(1, position.staffId());
-	    stat.setLong(2, position.blockId());
+	    stat.setLong(1, position.staffId);
+	    stat.setLong(2, position.blockId);
 	    ResultSet resultSet = stat.executeQuery();
 	    while(resultSet.next()) {
-		final Long id = resultSet.getLong("id");
-		final Long startTime = resultSet.getLong("start_time");
-		final SymbolType symbolType = SymbolType.fromBaseValue(resultSet.getString("symbol_type"));
-		symbols.add(new Symbol() {
-			@Override public Long id() { return id; }
-			@Override public Position position() { return position; }
-			@Override public Long startTime() { return startTime; }
-			@Override public SymbolType symbolType() { return symbolType; }
-		    });
+		Symbol symbol = new Symbol();
+		symbol.id = resultSet.getLong("id");
+		symbol.position = position;
+		symbol.startTime = resultSet.getLong("start_time");
+		symbol.symbolType = SymbolType.fromBaseValue(resultSet.getString("symbol_type"));
+		symbols.add(symbol);
 	    }
 	    return symbols;
 	}
+    };
 
-	public static Long insert(Connection connection, Symbol symbol) throws SQLException {
-	    Long id;
+    public static final DaoAction<Symbol, Symbol> insert = new DaoAction<Symbol, Symbol>() {
+	@Override public Symbol doSql(Connection connection, Symbol symbol) throws SQLException {
 	    PreparedStatement stat = connection.prepareStatement("insert into symbol ('id', 'block_id', 'staff_id', 'start_time', 'symbol_type') " +
 								 "values (null, ?, ?, ?, ?)");
-	    stat.setLong(1, symbol.position().blockId());
-	    stat.setLong(2, symbol.position().staffId());
-	    stat.setLong(3, symbol.startTime());
-	    stat.setString(4, symbol.symbolType().baseValue);
+	    stat.setLong(1, symbol.position.blockId);
+	    stat.setLong(2, symbol.position.staffId);
+	    stat.setLong(3, symbol.startTime);
+	    stat.setString(4, symbol.symbolType.baseValue);
 	    stat.executeUpdate();
 	    ResultSet resultSet = stat.getGeneratedKeys();
-	    if(resultSet.next()) {
-		id = resultSet.getLong(1);
-	    } else {
+	    if(!resultSet.next()) {
 		throw new SQLException("Could not retrieve new symbol id.");
 	    }
-	    return id;
+	    symbol.id = resultSet.getLong(1);
+	    return symbol;
 	}
+    };
 
-	public static void deleteAllInTune(Connection connection, Long tuneId) throws SQLException {
+    public static final DaoAction<Long, Object> deleteAllInTune = new DaoAction<Long, Object>() {
+	@Override public Object doSql(Connection connection, Long tuneId) throws SQLException {
 	    PreparedStatement stat = connection.prepareStatement("delete from symbol " +
 								 "where exists ( " +
 								 "select * from staff " +
@@ -86,6 +87,7 @@ public interface Symbol {
 	    stat.setLong(1, tuneId);
 	    stat.setLong(2, tuneId);
 	    stat.executeUpdate();
+	    return null;
 	}
-    }
+    };
 }

@@ -9,7 +9,7 @@ import play.mvc.*;
 import play.mvc.Http.*;
 import play.mvc.Http.MultipartFormData.*;
 
-import models.*;
+import models.Tune;
 import views.html.*;
 import utils.nwc.*;
 
@@ -26,8 +26,8 @@ public class HtmlApi extends Controller {
 
     public static Result createNew() {
 	DynamicForm requestData = Form.form().bindFromRequest();
-	Long id = Tune.create.execute(new Tune.Blank(requestData.get("name")));
-	return redirect(routes.HtmlApi.showTune(id));
+	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
+	return redirect(routes.HtmlApi.showTune(tune.id));
     }
 
     public static Result deleteTune(Long id) {
