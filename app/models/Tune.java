@@ -84,11 +84,18 @@ public class Tune {
 	}
     };
 
+    public static final Tune createNewTune(String name) {
+        Tune tune = makeBlank(name);
+	insert.execute(tune);
+	return tune;
+    }
+
     public static final Tune makeBlank(String name) {
 	Tune tune = new Tune();
 	tune.name = name;
 	tune.lastModified = new java.util.Date();
 	tune.sects.add(Sect.makeBlank(tune, 0L));
+//	tune.sects.add(Sect.createNewSect(tune, 0L));
 	return tune;
     }
 

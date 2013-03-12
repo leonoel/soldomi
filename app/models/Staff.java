@@ -63,5 +63,18 @@ public class Staff {
 	}
     };
 
+    public static final Staff makeBlank(Syst syst,String name) {
+      Staff staff = new Staff();
+      staff.syst = syst;
+      staff.name = name;
+      return staff;
+    }
+
+    public static final Staff createNewStaff(Syst syst,String name) {
+      Staff staff = makeBlank(syst,name);
+      insert.execute(staff);
+      return staff;
+    }
+
 }
 

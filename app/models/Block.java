@@ -11,9 +11,15 @@ public class Block {
     public Long startTime;
 
     public static Block makeBlank(Sect sect, Long startTime) {
-	Block block = new Block();
-	block.sect = sect;
+	Block block     = new Block();
+	block.sect      = sect;
 	block.startTime = startTime;
+	return block;
+    }
+
+    public static Block createNewBlock(Sect sect, Long startTime) {
+	Block block = makeBlank(sect,startTime);
+        insert.execute(block);
 	return block;
     }
 

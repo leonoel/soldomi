@@ -26,7 +26,8 @@ public class HtmlApi extends Controller {
 
     public static Result createNew() {
 	DynamicForm requestData = Form.form().bindFromRequest();
-	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
+//	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
+        Tune tune = Tune.createNewTune(requestData.get("name"));
 	return redirect(routes.HtmlApi.showTune(tune.id));
     }
 

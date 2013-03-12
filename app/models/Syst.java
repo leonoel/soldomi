@@ -10,6 +10,22 @@ public class Syst {
     public Tune tune;
     public String name;
     public final List<Staff> staffs = new ArrayList<Staff>();
+    
+    public static final Syst createNewSyst(Tune tune, String name) {
+      Syst syst = makeBlank(tune,name);
+      insert.execute(syst);
+      return syst;
+    }
+
+    public static final Syst makeBlank(Tune tune, String name) {
+      Syst syst = new Syst();
+      syst.tune = tune;
+      syst.name = name;
+      syst.staffs.add(Staff.makeBlank(syst,name));
+//      syst.staffs.add(Staff.createNewStaff(syst,name));
+//      syst.staffs.insert();
+      return syst;
+    }
 
     public static final DaoAction<Syst, Syst> insert = new DaoAction<Syst, Syst>() {
 	@Override public Syst doSql(Connection connection,
@@ -65,8 +81,6 @@ public class Syst {
 	    return null;
 	}
     };
-
-
 }
 
 

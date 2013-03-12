@@ -9,14 +9,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class NwcFileImporter {
-
+/*
     private final class Staff {
 
 	private final nwcfile.Staff m_nwcStaff;
 	private final String m_name;
-	/*
-	 * Unit : sixty-fourths
-	 */
+	//
+	// Unit : sixty-fourths
+	//
 	public Long time;
 
 	private Clef m_clef;
@@ -35,7 +35,6 @@ public class NwcFileImporter {
 		nwcfile.SymbolContainer symbolContainer = m_symbolContainerIterator.next();
 		switch(symbolContainer.getType()) {
 		case NOTE: {
-		    /*
 		    nwcfile.Segment nwcSegment    = (nwcfile.Segment) symbolContainer.getSymbol();
 		    Segment segment               = new Segment();
 		    segment.rest             = false;
@@ -47,11 +46,9 @@ public class NwcFileImporter {
 		    segment.durationSymbol   = toDurationSymbol(nwcSegment.getDuration());
 		    segment.tupletDenominator = nwcSegment.isTriplet() ? 3 : 1;
 		    time                  += segment.duration(); // TODO handle tuplets
-		    */
 		    break;
 		}
 		case REST: {
-		    /*
 		    nwcfile.Segment nwcSegment = (nwcfile.Segment) symbolContainer.getSymbol();
 		    DurationSymbol durationSymbol = toDurationSymbol(nwcSegment.getDuration());
 		    Segment segment = new Segment();
@@ -63,30 +60,23 @@ public class NwcFileImporter {
 		    segment.dotCount         = toDotCount(nwcSegment.getDots());
 		    segment.durationSymbol   = toDurationSymbol(nwcSegment.getDuration());
 		    time                  += segment.duration(); // TODO handle tuplets
-		    */
 		    break;
 		}
 		case TIME_SIGNATURE: {
-		    /*
 		    nwcfile.TimeSignature nwcTimeSignature = (nwcfile.TimeSignature) symbolContainer.getSymbol();
 		    m_nwcFileImporter.addTimeSignature(new TimeSignature(time,
 									 Integer.valueOf(nwcTimeSignature.getBeatCount()),
 									 toDurationSymbol(nwcTimeSignature.getBeatValue())));
-		    */
 		    break;
 		}
 		case KEY_SIGNATURE: {
-		    /*
 		    nwcfile.KeySignature nwcKeySignature = (nwcfile.KeySignature) symbolContainer.getSymbol();
 		    m_nwcFileImporter.addKeySignature(new KeySignature(time,nwcKeySignature.getFlats(),nwcKeySignature.getSharps()));
-		    */
 		    break;
 		}
 		case CLEF: {
-		    /*
 		    nwcfile.Clef nwcClef = (nwcfile.Clef) symbolContainer.getSymbol();
 		    m_clef = toClef(nwcClef);
-		    */
 		    break;
 		}
 		case BAR_LINE: {
@@ -115,6 +105,7 @@ public class NwcFileImporter {
     private final class Syst {
     }
 
+*/
     private final nwcfile.NwcFile m_nwcFile;
     private final List<Syst> m_systs = new ArrayList<Syst>();
     private final List<Staff> m_staffs = new ArrayList<Staff>();
@@ -125,20 +116,31 @@ public class NwcFileImporter {
 
     public NwcFileImporter(nwcfile.NwcFile nwcFile) {
 	m_nwcFile = nwcFile;
-	List<nwcfile.Staff> nwcStaves = m_nwcFile.getStaves();
-	for (nwcfile.Staff nwcStaff : nwcStaves) {
-	    m_staffs.add(new Staff(nwcStaff));
-	}
     }
 
     public Long save() {
-	addAllSymbols();
-	adjustTimeSignatures();
-	propagateKeySignatures();
 
 	final String name = m_nwcFile.getTitle().length() == 0 ? "Untitled" : m_nwcFile.getTitle();
 	final List<Syst> systs = new ArrayList<Syst>();
 	final List<Block> blocks = new ArrayList<Block>();
+
+//        Tune tune = Tune.insert.execute(Tune.makeBlank(name));
+        Tune tune = Tune.createNewTune(name);
+	List<nwcfile.Staff> nwcStaves = m_nwcFile.getStaves();
+	for (nwcfile.Staff nwcStaff : nwcStaves) {
+//	for (int i=0;i<nwcStaves.size();i++) {
+//	  systs.add(Syst.makeBlank(tune,nwcStaff.getName()));
+	  systs.add(Syst.createNewSyst(tune,nwcStaff.getName()));
+//	  systs.add(new Syst()); //.createNewSyst(tune,nwcStaff.getName()));
+//	    m_staffs.add(new Staff(nwcStaff));
+	}
+
+	return tune.id;
+/*
+	addAllSymbols();
+	adjustTimeSignatures();
+	propagateKeySignatures();
+
 
 	for (Syst syst : m_systs) {
 	    systs.add(syst);
@@ -149,6 +151,7 @@ public class NwcFileImporter {
 	}
 
 	return null;
+*/
     }
 
     /*
@@ -164,6 +167,7 @@ public class NwcFileImporter {
     */
 
     private void addAllSymbols() {
+/*
 	m_currentBlock = new Block(0L);
 
 	while(isSymbolLeft()) {
@@ -173,6 +177,7 @@ public class NwcFileImporter {
 		m_currentBlock = new Block(absoluteTime());
 	    }
 	}
+*/
     }
 
     private void adjustTimeSignatures() {
@@ -240,14 +245,18 @@ public class NwcFileImporter {
     }
 
     private boolean isSymbolLeft() {
+/*
 	for (Staff staff : m_staffs) {
 	    if (staff.isSymbolLeft())
 		return true;
 	}
 	return false;
+*/
+	return false;
     }
 
     private void stepLatestStaff() {
+/*
 	Long minTime = 0L;
 	Staff staffToStep = null;
 	for (Staff staff : m_staffs) {
@@ -259,19 +268,23 @@ public class NwcFileImporter {
 	    }
 	}
 	staffToStep.stepOneMeasure(m_currentBlock);
+*/
     }
 
     private boolean areStavesSynchronized() {
+/*
 	Long time = absoluteTime();
 	for (Staff staff : m_staffs) {
 	    if (staff.isSymbolLeft() && time == staff.time) {
 		return false;
 	    }
 	}
-	return true;
-    }
+*/
+	return true; 
+   }
 
     private Long absoluteTime() {
+/*
 	Long time = 0L;
 	for (Staff staff : m_staffs) {
 	    if (time < staff.time) {
@@ -279,6 +292,8 @@ public class NwcFileImporter {
 	    }
 	}
 	return time;
+*/
+        return 0L;
     }
 
     private static DurationSymbol toDurationSymbol(nwcfile.TimeSignature.BeatValue beatValue) {

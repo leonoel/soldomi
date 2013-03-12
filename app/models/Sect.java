@@ -16,6 +16,13 @@ public class Sect {
 	sect.tune = tune;
 	sect.startTime = startTime;
 	sect.blocks.add(Block.makeBlank(sect, startTime));
+//	sect.blocks.add(Block.createNewBlock(sect, startTime));
+	return sect;
+    }
+
+    public static Sect createNewSect(Tune tune, Long startTime) {
+	Sect sect = makeBlank(tune,startTime);
+	insert.execute(sect);
 	return sect;
     }
 
