@@ -32,6 +32,7 @@ public class Tune {
 	    PreparedStatement stat = connection.prepareStatement("insert into tune values (null, ?, ?)");
 	    stat.setString(1, tune.name);
 	    stat.setDate(2, new java.sql.Date(tune.lastModified.getTime()));
+
 	    stat.executeUpdate();
 	    ResultSet resultSet = stat.getGeneratedKeys();
 	    if(!resultSet.next()) {

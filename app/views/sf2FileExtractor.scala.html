@@ -1,0 +1,95 @@
+@()
+
+@main("SolDoMi - SF2 File Extractor") {
+
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/sf2file.js")"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $("#fileSelector").get(0).onchange = function(e) {
+    Sf2File.decode(e.target.files[0], function(sf2File) {
+      var makeInfoUl = function(info) {
+        var infoFields = ["ifil", "isng", "irom", "iver", "inam", "icrd", "ieng", "iprd", "icop", "icmt", "istf"];
+        var ul = $("<ul>");
+        infoFields.forEach(function(field) {
+          ul.append($("<li>", {text: field + " : " + info[field]}));
+        });
+        return ul;			  
+      }
+      var makeBanksUl = function(banks) {
+        var ul = $("<ul>");
+        banks.forEach(function(bank) {
+          var li = $("<li>", {text: "Bank #" + bank.id});
+          li.append($("<input>", {type: "submit", value: "Upload"}));			    
+          li.append(makePresetsTable(bank.presets));
+          ul.append(li);
+	});
+        return ul;
+      }
+      var makePresetsTable = function(presets) {
+        var table = $("<table>");
+        var head = $("<tr>");
+        head.append($("<th>", {text: "Id"}));
+        head.append($("<th>", {text: "Name"}));
+        head.append($("<th>", {text: "Upload"}));
+        table.append(head);
+        presets.forEach(function(preset) {
+          var row = $("<tr>");
+          var id = $("<td>", {text: preset.id});
+          var name = $("<td>", {text: preset.name});
+          var upload = $("<td>");
+//          var uploadCb = $("<input>", {type: "checkbox"});			    
+//          upload.append(uploadCb);
+	  var uploadButton = $("<input>", {type: "button" ,value: "Upload"});
+          uploadButton.click(function() {			    
+            console.log("Upload requested.");
+            preset.pack(function(preset) {
+              console.log("Preset loaded.");
+              console.log(preset);
+              $.ajax({type: "POST",
+                      url: "@routes.JsonApi.newPreset()",
+                      data: preset,
+                      contentType: "application/json; charset=utf-8",
+                      dataType: "json",
+                      success: function(data){alert(data);},
+                      failure: function(errMsg) {alert(errMsg);}
+	             });
+            });
+          });
+          upload.append(uploadButton);
+
+          var row = $("<tr>");
+          row.append(id);
+          row.append(name);
+          row.append(upload);
+          table.append(row);
+        });
+  	return table;
+      }
+
+      var fileRootUl = $("<ul>");
+
+      var fileInfoLi = $("<li>", {text: "Info :"});
+      fileInfoLi.append(makeInfoUl(sf2File.info));
+
+      var fileBanksLi = $("<li>", {text: "Banks :"});
+      fileBanksLi.append(makeBanksUl(sf2File.banks));
+
+      fileRootUl.append(fileInfoLi);
+      fileRootUl.append(fileBanksLi);			  
+
+      var fileContentsDiv = $("#fileContents");
+      fileContentsDiv.empty();
+      fileContentsDiv.append(fileRootUl);		 
+      			  
+    });
+  };
+});
+</script>
+
+<h1>SF2 File Extractor</h1>
+
+File : <input type="file" id="fileSelector">
+<div id="fileContents"></div>
+
+}

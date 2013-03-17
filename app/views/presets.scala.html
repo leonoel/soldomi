@@ -1,0 +1,23 @@
+@(presets: List[Preset])
+@import helper._
+
+@main("SolDoMi - Presets") {
+
+<h2>@presets.size() preset(s)</h2>
+  @if(!presets.isEmpty()) {
+    <div class="presets">
+      <ul>
+	@for(preset <- presets) {
+          <li>
+	    @form(action = routes.HtmlApi.deletePreset(preset.id)) {
+              <a href="@routes.JsonApi.preset(preset.id)">@preset.name</a> <input type="submit" value="Delete" />
+	    }
+	  </li>
+	}
+      </ul>
+    </div>
+  }
+
+  <a href="@routes.HtmlApi.sf2FileExtractor()">SF2 File Extractor</a>
+
+}

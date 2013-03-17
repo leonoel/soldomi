@@ -1,0 +1,42 @@
+@(tunes: List[Tune])
+@import helper._
+
+@main("SolDoMi - Tunes") {
+
+@if(flash.get("error")) {
+<p class="error">
+  @flash.get("error")
+</p>
+}
+
+    
+<h2>@tunes.size() tune(s)</h2>
+  @if(!tunes.isEmpty()) {
+    <div class="tunes">
+      <ul>
+	@for(tune <- tunes) {
+          <li>
+	    @form(action = routes.HtmlApi.deleteTune(tune.id)) {
+              <a href="@routes.HtmlApi.showTune(tune.id)">@tune.name</a> <input type="submit" value="Delete" />
+	    }
+	  </li>
+	}
+      </ul>
+    </div>
+  }
+  <div class="addNew">
+    <h2>Create new tune :</h2>
+    @form(action = routes.HtmlApi.createNew) {
+      <input type="text" name="name"/>
+      <input type="submit" value="Create" />
+    }
+  </div>
+  <div class="addNwc">
+    <h2>Import nwc file :</h2>
+    @form(action = routes.HtmlApi.importNwc, 'enctype -> "multipart/form-data") {
+      <input type="file" name="nwc"/>
+      <input type="submit" value="Upload" />
+    }
+
+  </div>
+}

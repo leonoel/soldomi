@@ -9,6 +9,7 @@ import play.mvc.*;
 import models.*;
 
 import play.libs.Json;
+import org.codehaus.jackson.*;
 import org.codehaus.jackson.node.*;
 import org.codehaus.jackson.map.*;
 
@@ -99,5 +100,28 @@ public class JsonApi extends Controller {
       */
       return ok("");
   }
+
+    public static Result preset(Long id) {
+	Preset preset = Preset.get.execute(id);
+	return ok(preset.js);
+    }
+
+    public static Result newPreset() {
+	JsonNode node = request().body().asJson();
+	JsonNode nameNode = node.get("name");
+	JsonNode jsNode = node.get("js");
+	if (nameNode == null || !nameNode.isTextual()) {
+	    return badRequest("Missing name");
+	}
+	if (jsNode == null || !jsNode.isTextual()) {
+	    return badRequest("Missing js");
+	}
+	java.lang.System.out.println(jsNode.getTextValue());
+	Preset preset = new Preset();
+	preset.name = nameNode.getTextValue();
+	preset.js = jsNode.getTextValue();
+	Preset.insert.execute(preset);
+	return ok(preset.id.toString());
+    }
 
 }

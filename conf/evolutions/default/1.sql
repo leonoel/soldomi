@@ -54,6 +54,13 @@ create table segment (
   primary key (id)
 );
 
+create table preset (
+  id                        bigint not null auto_increment,
+  name                      varchar(255),
+  js                        varchar(1000000),
+  primary key (id)
+);
+
 # --- !Downs
 
 drop table if exists tune;
@@ -63,3 +70,4 @@ drop table if exists sect;
 drop table if exists block;
 drop table if exists symbol;
 drop table if exists segment;
+drop table if exists preset;

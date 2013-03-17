@@ -10,18 +10,19 @@ import play.mvc.Http.*;
 import play.mvc.Http.MultipartFormData.*;
 
 import models.Tune;
+import models.Preset;
 import views.html.*;
 import utils.nwc.*;
 
 public class HtmlApi extends Controller {
     
     public static Result index() {
-	return redirect(routes.HtmlApi.tunes());
+	return ok(views.html.index.render());
     }
 
     public static Result tunes() {
 	List<Tune> tunes = Tune.getAll.execute(null);
-	return ok(views.html.index.render(tunes));
+	return ok(views.html.tunes.render(tunes));
     }
 
     public static Result createNew() {
@@ -61,5 +62,19 @@ public class HtmlApi extends Controller {
     public static Result showTune(Long id) {
 	Tune tune = Tune.get.execute(id);
 	return ok(views.html.showTune.render(tune));
+    }
+
+    public static Result presets() {
+	List<Preset> presets = Preset.getAll.execute(null);
+	return ok(views.html.presets.render(presets));
+    }
+
+    public static Result deletePreset(Long id) {
+	Preset.delete.execute(id);
+	return redirect(routes.HtmlApi.presets());
+    }
+
+    public static Result sf2FileExtractor() {
+	return ok(views.html.sf2FileExtractor.render());
     }
 }
