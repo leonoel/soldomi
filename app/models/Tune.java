@@ -11,6 +11,28 @@ public class Tune {
     public final List<Syst> systs = new ArrayList<Syst>();
     public final List<Sect> sects = new ArrayList<Sect>();
 
+    public Tune() {
+	this(new String());
+    }
+
+    public Tune(String _name) {
+	lastModified = new java.util.Date();
+	name = _name;
+    }
+
+    public static final Tune createNewTune(String name) {
+        Tune tune = makeBlank(name);
+	insert.execute(tune);
+	return tune;
+    }
+
+    public static final Tune makeBlank(String name) {
+	Tune tune = new Tune(name);
+	tune.sects.add(Sect.makeBlank(tune, 0L));
+//	tune.sects.add(Sect.createNewSect(tune, 0L));
+	return tune;
+    }
+
     public static final DaoAction<Object, List<Tune>> getAll = new DaoAction<Object, List<Tune>>() {
 	@Override public List<Tune> doSql(Connection connection, Object object) throws SQLException {
 	    List<Tune> tunes = new ArrayList<Tune>();
@@ -84,20 +106,5 @@ public class Tune {
 	    return null;
 	}
     };
-
-    public static final Tune createNewTune(String name) {
-        Tune tune = makeBlank(name);
-	insert.execute(tune);
-	return tune;
-    }
-
-    public static final Tune makeBlank(String name) {
-	Tune tune = new Tune();
-	tune.name = name;
-	tune.lastModified = new java.util.Date();
-	tune.sects.add(Sect.makeBlank(tune, 0L));
-//	tune.sects.add(Sect.createNewSect(tune, 0L));
-	return tune;
-    }
 
 }

@@ -63,15 +63,20 @@ public class Staff {
 	}
     };
 
-    public static final Staff makeBlank(Syst syst,String name) {
-      Staff staff = new Staff();
-      staff.syst = syst;
-      staff.name = name;
-      return staff;
+    public Staff() {
     }
 
-    public static final Staff createNewStaff(Syst syst,String name) {
-      Staff staff = makeBlank(syst,name);
+    public Staff(Syst _syst, String _name) {
+	syst = _syst;
+	name = _name;
+    }
+
+    public static final Staff makeBlank(Syst syst, String name) {
+	return new Staff(syst, name);
+    }
+
+    public static final Staff createNewStaff(Syst syst, String name) {
+      Staff staff = new Staff(syst,name);
       insert.execute(staff);
       return staff;
     }

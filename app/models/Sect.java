@@ -11,17 +11,24 @@ public class Sect {
     public Long startTime;
     public final List<Block> blocks = new ArrayList<Block>();
 
+    public Sect() {
+
+    }
+
+    public Sect(Tune _tune, Long _startTime) {
+	tune = _tune;
+	startTime = _startTime;
+    }
+
     public static Sect makeBlank(Tune tune, Long startTime) {
-	Sect sect = new Sect();
-	sect.tune = tune;
-	sect.startTime = startTime;
+	Sect sect = new Sect(tune, startTime);
 	sect.blocks.add(Block.makeBlank(sect, startTime));
 //	sect.blocks.add(Block.createNewBlock(sect, startTime));
 	return sect;
     }
 
     public static Sect createNewSect(Tune tune, Long startTime) {
-	Sect sect = makeBlank(tune,startTime);
+	Sect sect = new Sect(tune, startTime);
 	insert.execute(sect);
 	return sect;
     }

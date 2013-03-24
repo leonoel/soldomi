@@ -2,6 +2,7 @@ package models;
 
 import java.util.*;
 import java.sql.*;
+import org.apache.commons.math3.fraction.Fraction;
 
 import utils.DaoAction;
 import utils.DurationSymbol;
@@ -12,8 +13,12 @@ public class Segment {
     public Long id;
     public Symbol symbol;
     public DurationSymbol durationSymbol;
+    public Fraction startTime;
+    public Fraction duration;
     public Integer dotCount;
     public Pitch pitch;
+    public Boolean rest;
+    public Tuplet tuplet;
 
     public static final DaoAction<Segment, Segment> insert = new DaoAction<Segment, Segment>() {
 	@Override public Segment doSql(Connection connection, Segment segment) throws SQLException {

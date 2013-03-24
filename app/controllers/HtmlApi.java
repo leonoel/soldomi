@@ -47,8 +47,8 @@ public class HtmlApi extends Controller {
 	    try {
 		nwcfile.NwcFileReader reader = new nwcfile.NwcFileReader(new FileInputStream(file));
 		nwcfile.NwcFile nwcfile = new nwcfile.NwcFile().unmarshall(reader);
-		Long id = new NwcFileImporter(nwcfile).save();
-		return redirect(routes.HtmlApi.showTune(id));
+		Tune tune = Tune.insert.execute(NwcFileImporter.run(nwcfile));
+		return redirect(routes.HtmlApi.showTune(tune.id));
 	    } catch (nwcfile.NwcFileException e) {
 		flash("error", "Error parsing nwc file.");
 	    } catch (FileNotFoundException e) {

@@ -1,0 +1,32 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+<<<<<<< HEAD
+GET     /                                                                          controllers.HtmlApi.index()
+GET     /tunes/html                                                                controllers.HtmlApi.tunes()
+GET     /presets/html								   controllers.HtmlApi.presets()
+GET     /presets/sf2FileExtractor/html                                             controllers.HtmlApi.sf2FileExtractor()
+GET	/tune/$tuneId<[0-9]+>/html                                                 controllers.HtmlApi.showTune(tuneId: Long)
+POST    /tune/html/new                                                             controllers.HtmlApi.createNew()
+POST    /tune/html/fromnwc                                                         controllers.HtmlApi.importNwc()
+POST    /tune/$tuneId<[0-9]+>/html/delete                                          controllers.HtmlApi.deleteTune(tuneId: Long)
+POST    /preset/$presetId<[0-9]+>/html/delete                                      controllers.HtmlApi.deletePreset(presetId: Long)
+POST    /preset/json/new                                                           controllers.JsonApi.newPreset()
+
+GET     /tune/$tuneId<[0-9]+>/json                                                 controllers.JsonApi.tuneInfo(tuneId: Long)
+=======
+GET     /                                  controllers.HtmlApi.index()
+GET     /tunes/html                        controllers.HtmlApi.tunes()
+GET	/tune/$tuneId<[0-9]+>/html         controllers.HtmlApi.showTune(tuneId: Long)
+GET     /tune/$tuneId<[0-9]+>/json         controllers.JsonApi.tuneInfo(tuneId: Long)
+POST    /tune/html/new                     controllers.HtmlApi.createNew()
+POST    /tune/html/fromnwc                 controllers.HtmlApi.importNwc()
+POST    /tune/$tuneId<[0-9]+>/html/delete  controllers.HtmlApi.deleteTune(tuneId: Long)
+>>>>>>> 5fdf71347339619391419a0265c10e33e254ccde
+
+GET     /preset/$presetId<[0-9]+>/json						   controllers.JsonApi.preset(presetId: Long)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

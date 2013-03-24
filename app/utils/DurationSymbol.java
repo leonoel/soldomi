@@ -10,11 +10,11 @@ public enum DurationSymbol {
     HALF               (32L, "half"), // Blanche
     WHOLE              (64L, "whole"); // Ronde
 
-    public Long duration;
+    public Long baseDuration;
     public String baseValue;
     
-    private DurationSymbol(Long _duration, String _baseValue)   {
-	duration = _duration;
+    private DurationSymbol(Long _baseDuration, String _baseValue)   {
+	baseDuration = _baseDuration;
 	baseValue = _baseValue;
     }
 
@@ -25,5 +25,13 @@ public enum DurationSymbol {
 	    }
 	}
 	return null;
+    }
+
+    public Long duration(int dotCount) {
+	Long duration = baseDuration;
+	for (int i = 0; i < dotCount; i++) {
+	    duration += (Long) (baseDuration / 2);
+	}
+	return duration;
     }
 }

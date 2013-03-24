@@ -7,181 +7,93 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.apache.commons.math3.fraction.Fraction;
 
 public class NwcFileImporter {
-/*
-    private final class Staff {
 
-	private final nwcfile.Staff m_nwcStaff;
-	private final String m_name;
-	//
-	// Unit : sixty-fourths
-	//
-	public Long time;
+    private final class StaffImporter {
+	public final Staff staff;
+	public Fraction time;
+	public Iterator<nwcfile.SymbolContainer> symbolContainerIterator;
 
-	private Clef m_clef;
-	private Iterator<nwcfile.SymbolContainer> m_symbolContainerIterator;
-
-	public Staff(nwcfile.Staff nwcStaff) {
-	    m_nwcStaff = nwcStaff;
-	    m_name = nwcStaff.getName();
-	    time = 0L;
-	    m_clef = Clef.TREBLE;
-	    m_symbolContainerIterator = nwcStaff.getSymbols().iterator();
-	}
-
-	public void stepOneMeasure(Block block) {
-	    while(m_symbolContainerIterator.hasNext()) {
-		nwcfile.SymbolContainer symbolContainer = m_symbolContainerIterator.next();
-		switch(symbolContainer.getType()) {
-		case NOTE: {
-		    nwcfile.Segment nwcSegment    = (nwcfile.Segment) symbolContainer.getSymbol();
-		    Segment segment               = new Segment();
-		    segment.rest             = false;
-		    segment.clef             = m_clef;
-		    segment.pitch            = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
-		    segment.accidental       = toAccidental(nwcSegment.getAccidental()); 
-		    segment.dotCount         = toDotCount(nwcSegment.getDots());
-		    segment.startTime        = time;
-		    segment.durationSymbol   = toDurationSymbol(nwcSegment.getDuration());
-		    segment.tupletDenominator = nwcSegment.isTriplet() ? 3 : 1;
-		    time                  += segment.duration(); // TODO handle tuplets
-		    break;
-		}
-		case REST: {
-		    nwcfile.Segment nwcSegment = (nwcfile.Segment) symbolContainer.getSymbol();
-		    DurationSymbol durationSymbol = toDurationSymbol(nwcSegment.getDuration());
-		    Segment segment = new Segment();
-		    segment.rest             = true;
-		    segment.clef             = m_clef;
-		    segment.pitch            = m_clef.getPitch();
-		    segment.accidental       = Accidental.AUTO;
-		    segment.startTime        = time;
-		    segment.dotCount         = toDotCount(nwcSegment.getDots());
-		    segment.durationSymbol   = toDurationSymbol(nwcSegment.getDuration());
-		    time                  += segment.duration(); // TODO handle tuplets
-		    break;
-		}
-		case TIME_SIGNATURE: {
-		    nwcfile.TimeSignature nwcTimeSignature = (nwcfile.TimeSignature) symbolContainer.getSymbol();
-		    m_nwcFileImporter.addTimeSignature(new TimeSignature(time,
-									 Integer.valueOf(nwcTimeSignature.getBeatCount()),
-									 toDurationSymbol(nwcTimeSignature.getBeatValue())));
-		    break;
-		}
-		case KEY_SIGNATURE: {
-		    nwcfile.KeySignature nwcKeySignature = (nwcfile.KeySignature) symbolContainer.getSymbol();
-		    m_nwcFileImporter.addKeySignature(new KeySignature(time,nwcKeySignature.getFlats(),nwcKeySignature.getSharps()));
-		    break;
-		}
-		case CLEF: {
-		    nwcfile.Clef nwcClef = (nwcfile.Clef) symbolContainer.getSymbol();
-		    m_clef = toClef(nwcClef);
-		    break;
-		}
-		case BAR_LINE: {
-		    return;
-		}
-		default: {
-		}
-		}
-	    }
-	}
-
-	public boolean isSymbolLeft() {
-	    return m_symbolContainerIterator.hasNext();
-	}
-	
-    }
-
-    private final class Block {
-	private final Long m_startTime;
-
-	public Block(Long startTime) {
-	    m_startTime = startTime;
+	public StaffImporter(nwcfile.Staff _nwcStaff, Staff _staff) {
+	    staff = _staff;
+	    time = Fraction.ZERO;
+	    symbolContainerIterator = _nwcStaff.getSymbols().iterator();
 	}
     }
 
-    private final class Syst {
-    }
+    private final nwcfile.NwcFile nwcFile;
+    private final Tune tune = new Tune();
 
-*/
-    private final nwcfile.NwcFile m_nwcFile;
-    private final List<Syst> m_systs = new ArrayList<Syst>();
-    private final List<Staff> m_staffs = new ArrayList<Staff>();
-    private final List<Block> m_blocks = new ArrayList<Block>();
-    private Block m_currentBlock;
-    //    private List<TimeSignature> m_timeSignatures = new ArrayList<TimeSignature>();
-    //    private List<KeySignature> m_keySignatures = new ArrayList<KeySignature>();
+    private final List<StaffImporter> staffImporters = new ArrayList<StaffImporter>();
 
-    public NwcFileImporter(nwcfile.NwcFile nwcFile) {
-	m_nwcFile = nwcFile;
-    }
+    private Sect currentSect;
+    private Block currentBlock;
 
-    public Long save() {
+    private NwcFileImporter(nwcfile.NwcFile _nwcFile) {
+	nwcFile = _nwcFile;
+	tune.name = nwcFile.getTitle().length() == 0 ? "Untitled" : nwcFile.getTitle();
 
-	final String name = m_nwcFile.getTitle().length() == 0 ? "Untitled" : m_nwcFile.getTitle();
-	final List<Syst> systs = new ArrayList<Syst>();
-	final List<Block> blocks = new ArrayList<Block>();
+	currentSect = new Sect(tune, 0L);
+	currentBlock = new Block(currentSect, 0L);
 
-//        Tune tune = Tune.insert.execute(Tune.makeBlank(name));
-        Tune tune = Tune.createNewTune(name);
-	List<nwcfile.Staff> nwcStaves = m_nwcFile.getStaves();
-	for (nwcfile.Staff nwcStaff : nwcStaves) {
-//	for (int i=0;i<nwcStaves.size();i++) {
-//	  systs.add(Syst.makeBlank(tune,nwcStaff.getName()));
-	  systs.add(Syst.createNewSyst(tune,nwcStaff.getName()));
-//	  systs.add(new Syst()); //.createNewSyst(tune,nwcStaff.getName()));
-//	    m_staffs.add(new Staff(nwcStaff));
+	currentSect.blocks.add(currentBlock);
+	tune.sects.add(currentSect);
+
+	for(nwcfile.Staff nwcStaff : nwcFile.getStaves()) {
+	    Syst syst = new Syst(tune, nwcStaff.getName());
+	    Staff staff = new Staff(syst, nwcStaff.getName());
+	    syst.staffs.add(staff);
+	    tune.systs.add(syst);
+	    staffImporters.add(new StaffImporter(nwcStaff, staff));
 	}
 
-	return tune.id;
-/*
+
 	addAllSymbols();
-	adjustTimeSignatures();
-	propagateKeySignatures();
-
-
-	for (Syst syst : m_systs) {
-	    systs.add(syst);
-	}
-
-	for (Block block : m_blocks) {
-	    blocks.add(block);
-	}
-
-	return null;
-*/
+	//	adjustTimeSignatures();
+	//	propagateKeySignatures();
     }
 
-    /*
-    void addTimeSignature(TimeSignature timeSignature) {
-	m_timeSignatures.add(timeSignature);
+    public static Tune run(nwcfile.NwcFile nwcFile) {
+	return new NwcFileImporter(nwcFile).tune;
     }
-    */
-
-    /*
-    void addKeySignature(KeySignature keySignature) {
-	m_keySignatures.add(keySignature);
-    }
-    */
 
     private void addAllSymbols() {
-/*
-	m_currentBlock = new Block(0L);
+	Fraction maxTime = Fraction.ZERO;
+	while(true) {
+	    StaffImporter minTimeStaff = null;
+	    for (StaffImporter staff : staffImporters) {
+		if (staff.symbolContainerIterator.hasNext() && (minTimeStaff == null || minTimeStaff.time.compareTo(staff.time) > 0)) {
+		    minTimeStaff = staff;
+		}
+	    }
+	    stepToNextBar(minTimeStaff);
 
-	while(isSymbolLeft()) {
-	    stepLatestStaff();
-	    if (areStavesSynchronized()) {
-		m_blocks.add(m_currentBlock);
-		m_currentBlock = new Block(absoluteTime());
+	    if (maxTime.compareTo(minTimeStaff.time) < 0) {
+		maxTime = minTimeStaff.time;
+	    }
+
+	    boolean sync = true;
+	    for (StaffImporter staff : staffImporters) {
+		if (!staff.symbolContainerIterator.hasNext()) {
+		    staff.time = maxTime;
+		}
+		sync = sync && (staff.time.equals(maxTime));
+	    }
+	    if (sync) {
+		if (isSymbolLeft()) {
+		    currentBlock = new Block(currentSect, maxTime.longValue());
+		    currentSect.blocks.add(currentBlock);
+		} else {
+		    return;
+		}
 	    }
 	}
-*/
     }
 
-    private void adjustTimeSignatures() {
 	/*
+    private void adjustTimeSignatures() {
 	Collections.sort(m_timeSignatures);
 	Iterator<TimeSignature> it = m_timeSignatures.iterator();
 	TimeSignature currentTs = null;
@@ -219,11 +131,11 @@ public class NwcFileImporter {
 				block.beatValue = beatValue;
 	    }
 	}
-	*/
     }
+	*/
 
-    private void propagateKeySignatures() {
 	/*
+    private void propagateKeySignatures() {
 	Collections.sort(m_keySignatures);
 	Iterator<KeySignature> it = m_keySignatures.iterator();
 	KeySignature currentKs = null;
@@ -241,59 +153,80 @@ public class NwcFileImporter {
 		//	block.keySignature = "C"; //new KeySignature(position);
 	    }
 	}
-	*/
     }
+	*/
 
     private boolean isSymbolLeft() {
-/*
-	for (Staff staff : m_staffs) {
-	    if (staff.isSymbolLeft())
+	for (StaffImporter staffImporter : staffImporters) {
+	    if (staffImporter.symbolContainerIterator.hasNext())
 		return true;
 	}
 	return false;
-*/
-	return false;
     }
 
-    private void stepLatestStaff() {
-/*
-	Long minTime = 0L;
-	Staff staffToStep = null;
-	for (Staff staff : m_staffs) {
-	    if (staff.isSymbolLeft()) {
-		if (staffToStep == null || minTime >= staff.time) {
-		    staffToStep = staff;
-		    minTime = staff.time;
+    private void stepToNextBar(StaffImporter staff) {
+	Tuplet currentTuplet = null;
+	while(staff.symbolContainerIterator.hasNext()) {
+	    nwcfile.SymbolContainer symbolContainer = staff.symbolContainerIterator.next();
+	    switch(symbolContainer.getType()) {
+	    case REST:
+	    case NOTE: {
+		nwcfile.Segment nwcSegment    = (nwcfile.Segment) symbolContainer.getSymbol();
+		Segment segment               = new Segment();
+
+		segment.rest                  = symbolContainer.getType() == nwcfile.SymbolContainer.SymbolType.REST;
+		//segment.pitch                 = m_clef.getPitch().addInterval((int) nwcSegment.getRelativePitch());
+		//segment.accidental       = toAccidental(nwcSegment.getAccidental()); 
+		segment.dotCount             = toDotCount(nwcSegment.getDots());
+		segment.durationSymbol       = toDurationSymbol(nwcSegment.getDuration());
+		segment.startTime            = staff.time;
+
+		nwcfile.Segment.Triplet nwcTriplet = nwcSegment.getTriplet();
+		if (nwcTriplet != nwcfile.Segment.Triplet.NONE) {
+		    segment.duration = new Fraction(segment.durationSymbol.duration(segment.dotCount)).multiply(new Fraction(2, 3));
+		    if (nwcTriplet == nwcfile.Segment.Triplet.FIRST) {
+			currentTuplet = new Tuplet();
+		    }
+		    segment.tuplet = currentTuplet;
+		    currentTuplet.segments.add(segment);
+		    if (nwcTriplet == nwcfile.Segment.Triplet.LAST) {
+			Fraction duration = Fraction.ZERO;
+			for (Segment tupletSegment : currentTuplet.segments) {
+			    duration.add(tupletSegment.duration);
+			}
+			currentTuplet.duration = duration.longValue();
+		    }
+		} else {
+		    segment.duration = new Fraction(segment.durationSymbol.duration(segment.dotCount));
 		}
-	    }
-	}
-	staffToStep.stepOneMeasure(m_currentBlock);
-*/
-    }
 
-    private boolean areStavesSynchronized() {
-/*
-	Long time = absoluteTime();
-	for (Staff staff : m_staffs) {
-	    if (staff.isSymbolLeft() && time == staff.time) {
-		return false;
-	    }
-	}
-*/
-	return true; 
-   }
+		// TODO add segment to tune
 
-    private Long absoluteTime() {
-/*
-	Long time = 0L;
-	for (Staff staff : m_staffs) {
-	    if (time < staff.time) {
-		time = staff.time;
+		staff.time = staff.time.add(segment.duration);
+		break;
 	    }
-	}
-	return time;
-*/
-        return 0L;
+	    case TIME_SIGNATURE: {
+		nwcfile.TimeSignature nwcTimeSignature = (nwcfile.TimeSignature) symbolContainer.getSymbol();
+		// TODO
+		break;
+	    }
+	    case KEY_SIGNATURE: {
+		nwcfile.KeySignature nwcKeySignature = (nwcfile.KeySignature) symbolContainer.getSymbol();
+		// TODO
+		break;
+	    }
+	    case CLEF: {
+		nwcfile.Clef nwcClef = (nwcfile.Clef) symbolContainer.getSymbol();
+		// TODO
+		break;
+	    }
+	    case BAR_LINE: {
+		return;
+	    }
+	    default: {
+	    }
+	    } // end switch
+	} // end while
     }
 
     private static DurationSymbol toDurationSymbol(nwcfile.TimeSignature.BeatValue beatValue) {
