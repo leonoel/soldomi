@@ -1,16 +1,23 @@
 package utils;
 
-import java.sql.*;
-import play.db.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import play.db.DB;
 
 public abstract class DaoAction<A, R> {
-    public R execute(A a) {
+    public static class DaoException extends Exception {
+	public DaoException(Exception e) {
+	    super(e);
+	}
+    }
+
+    public R execute(A a) throws DaoException {
+	R result = null;
 	Connection connection = DB.getConnection();
 	try {
 	    connection.setAutoCommit(false);
-	    R result = doSql(connection, a);
+	    result = doSql(connection, a);
 	    connection.commit();
-	    return result;
 	} catch (SQLException e1) {
 	    e1.printStackTrace();
 	    try {
@@ -18,6 +25,7 @@ public abstract class DaoAction<A, R> {
 	    } catch (SQLException e2) {
 		e2.printStackTrace();
 	    }
+	    throw new DaoException(e1);
 	} finally {
 	    try {
 		connection.close();
@@ -25,7 +33,7 @@ public abstract class DaoAction<A, R> {
 		e.printStackTrace();
 	    }
 	}
-	return null;
+	return result;
     }
 
     public abstract R doSql(Connection connection, A a) throws SQLException;

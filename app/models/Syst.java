@@ -1,9 +1,15 @@
 package models;
 
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class Syst {
     public Long id;
@@ -20,7 +26,7 @@ public class Syst {
 	name = _name;
     }
     
-    public static final Syst createNewSyst(Tune tune, String name) {
+    public static final Syst createNewSyst(Tune tune, String name) throws DaoException {
       Syst syst = makeBlank(tune,name);
       insert.execute(syst);
       return syst;

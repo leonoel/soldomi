@@ -39,18 +39,33 @@ create table symbol (
   id                        bigint not null auto_increment,
   staff_id                  bigint not null,
   block_id                  bigint not null,
-  start_time                bigint,
+  start_time_n              int,
+  start_time_d              int not null,
   symbol_type               varchar(255),
   primary key (id)
 );
 
 create table segment (
   id                        bigint not null auto_increment,
-  segment_id                bigint not null,
-  duration_type             varchar(255),
+  symbol_id                 bigint not null,
+  duration_n                int,
+  duration_d                int not null,
   dot_count                 int,
-  pitch_note                varchar(255),
-  pitch_octave              int,
+  tuplet_id                 bigint,
+  primary key (id)
+);
+
+create table tuplet (
+  id                        bigint not null auto_increment,
+  duration                  bigint,
+  primary key (id)
+);
+
+create table note (
+  id                        bigint not null auto_increment,
+  segment_id                bigint not null,
+  note_name                 varchar(255),
+  octave                    int,
   primary key (id)
 );
 
@@ -70,4 +85,6 @@ drop table if exists sect;
 drop table if exists block;
 drop table if exists symbol;
 drop table if exists segment;
+drop table if exists note;
+drop table if exists tuplet;
 drop table if exists preset;

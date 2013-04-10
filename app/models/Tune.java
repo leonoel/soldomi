@@ -1,8 +1,15 @@
 package models;
 
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class Tune {
     public Long id;
@@ -20,7 +27,12 @@ public class Tune {
 	name = _name;
     }
 
-    public static final Tune createNewTune(String name) {
+    @Override
+    public String toString() {
+	return "Tune " + id + " (" + name + ")";
+    }
+
+    public static final Tune createNewTune(String name) throws DaoException {
         Tune tune = makeBlank(name);
 	insert.execute(tune);
 	return tune;

@@ -1,14 +1,43 @@
 package models;
 
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class Staff {
     public Long id;
     public Syst syst;
     public String name;
+    public List<Symbol> symbols = new ArrayList<Symbol>();
+
+    public Staff() {
+    }
+
+    public Staff(Long _id) {
+	id = _id;
+    }
+
+    public Staff(Syst _syst, String _name) {
+	syst = _syst;
+	name = _name;
+    }
+
+    public static final Staff makeBlank(Syst syst, String name) {
+	return new Staff(syst, name);
+    }
+
+    public static final Staff createNewStaff(Syst syst, String name) throws DaoException {
+      Staff staff = new Staff(syst,name);
+      insert.execute(staff);
+      return staff;
+    }
 
     public static final DaoAction<Staff, Staff> insert = new DaoAction<Staff, Staff>() {
 	@Override public Staff doSql(Connection connection,
@@ -22,6 +51,11 @@ public class Staff {
 		throw new SQLException("Could not retrieve new staff id");
 	    }
 	    staff.id = resultSet.getLong(1);
+	    for (Symbol symbol : staff.symbols) {
+		if (symbol.position.block.id != null) {
+		    Symbol.insert.doSql(connection, symbol);
+		}
+	    }
 	    return staff;
 	}
     };
@@ -62,24 +96,6 @@ public class Staff {
 	    return null;
 	}
     };
-
-    public Staff() {
-    }
-
-    public Staff(Syst _syst, String _name) {
-	syst = _syst;
-	name = _name;
-    }
-
-    public static final Staff makeBlank(Syst syst, String name) {
-	return new Staff(syst, name);
-    }
-
-    public static final Staff createNewStaff(Syst syst, String name) {
-      Staff staff = new Staff(syst,name);
-      insert.execute(staff);
-      return staff;
-    }
 
 }
 
