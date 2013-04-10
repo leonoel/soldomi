@@ -2,6 +2,7 @@ package controllers;
 
 import java.util.*;
 import java.io.*;
+import java.sql.SQLException;
 
 import play.*;
 import play.data.*;
@@ -11,8 +12,11 @@ import play.mvc.Http.MultipartFormData.*;
 
 import models.Tune;
 import models.Preset;
-import views.html.*;
-import utils.nwc.*;
+import views.html.index;
+import views.html.tunes;
+import utils.nwc.NwcFileImporter;
+import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class HtmlApi extends Controller {
     
@@ -20,24 +24,24 @@ public class HtmlApi extends Controller {
 	return ok(views.html.index.render());
     }
 
-    public static Result tunes() {
+    public static Result tunes() throws DaoException {
 	List<Tune> tunes = Tune.getAll.execute(null);
 	return ok(views.html.tunes.render(tunes));
     }
 
-    public static Result createNew() {
+    public static Result createNew() throws DaoException {
 	DynamicForm requestData = Form.form().bindFromRequest();
 //	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
         Tune tune = Tune.createNewTune(requestData.get("name"));
 	return redirect(routes.HtmlApi.showTune(tune.id));
     }
 
-    public static Result deleteTune(Long id) {
+    public static Result deleteTune(Long id) throws DaoException {
 	Tune.delete.execute(id);
 	return redirect(routes.HtmlApi.tunes());
     }
 
-    public static Result importNwc() {
+    public static Result importNwc() throws DaoException {
 	MultipartFormData body = request().body().asMultipartFormData();
 	FilePart nwc = body.getFile("nwc");
 	if (nwc != null) {
@@ -47,7 +51,8 @@ public class HtmlApi extends Controller {
 	    try {
 		nwcfile.NwcFileReader reader = new nwcfile.NwcFileReader(new FileInputStream(file));
 		nwcfile.NwcFile nwcfile = new nwcfile.NwcFile().unmarshall(reader);
-		Tune tune = Tune.insert.execute(NwcFileImporter.run(nwcfile));
+		Tune tune = NwcFileImporter.run(nwcfile);
+		tune = Tune.insert.execute(tune);
 		return redirect(routes.HtmlApi.showTune(tune.id));
 	    } catch (nwcfile.NwcFileException e) {
 		flash("error", "Error parsing nwc file.");
@@ -60,17 +65,17 @@ public class HtmlApi extends Controller {
 	return redirect(routes.HtmlApi.tunes());
     }
 
-    public static Result showTune(Long id) {
+    public static Result showTune(Long id) throws DaoException {
 	Tune tune = Tune.get.execute(id);
 	return ok(views.html.showTune.render(tune));
     }
 
-    public static Result presets() {
+    public static Result presets() throws DaoException {
 	List<Preset> presets = Preset.getAll.execute(null);
 	return ok(views.html.presets.render(presets));
     }
 
-    public static Result deletePreset(Long id) {
+    public static Result deletePreset(Long id) throws DaoException {
 	Preset.delete.execute(id);
 	return redirect(routes.HtmlApi.presets());
     }

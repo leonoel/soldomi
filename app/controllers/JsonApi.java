@@ -4,24 +4,36 @@ import java.util.*;
 import java.io.*;
 import java.text.*;
 import play.*;
-import play.mvc.*;
+import play.mvc.Result;
+import play.mvc.Controller;
 
-import models.*;
+import models.Tune;
+import models.Staff;
+import models.Syst;
+import models.Block;
+import models.Sect;
+import models.Preset;
+import models.Symbol;
+import models.Symbol.Position;
 
-import play.libs.Json;
-import org.codehaus.jackson.*;
-import org.codehaus.jackson.node.*;
-import org.codehaus.jackson.map.*;
+import utils.DaoAction;
+import utils.DaoAction.DaoException;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 
 public class JsonApi extends Controller {
 
-    public static Result tuneInfo(Long id) throws IOException {
+    public static Result tuneInfo(Long id) throws IOException, DaoException {
 	Tune tune = Tune.get.execute(id);
 
 	ObjectMapper mapper = new ObjectMapper();
 	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
 
-	ObjectNode tuneJson = Json.newObject();
+	ObjectNode tuneJson = mapper.createObjectNode();
 	tuneJson.put("name", tune.name);
 	tuneJson.put("lastModified", new SimpleDateFormat().format(tune.lastModified));
 
@@ -56,6 +68,46 @@ public class JsonApi extends Controller {
 
 	return ok(writer.toString());
   }
+
+    public static Result symbols(Long tuneId, Long staffId, Long blockId) throws IOException, DaoException {
+	List<Symbol> symbols = Symbol.getAll.execute(new Position(new Staff(staffId), new Block(blockId)));
+
+	ObjectMapper mapper = new ObjectMapper();
+	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+
+	ArrayNode symbolsJson = mapper.createArrayNode();
+	for (Symbol symbol : symbols) {
+	    ObjectNode symbolJson = symbolsJson.addObject();
+	    symbolJson.put("id", symbol.id);
+	    symbolJson.put("type", symbol.symbolType.baseValue);
+	    symbolJson.put("startTimeNumerator", symbol.startTime.getNumerator());
+	    symbolJson.put("startTimeDenominator", symbol.startTime.getDenominator());
+
+	    if (symbol.segment != null) {
+		ObjectNode segmentJson = symbolJson.putObject("segment");
+		segmentJson.put("id", symbol.segment.id);
+		segmentJson.put("durationNumerator", symbol.segment.duration.getNumerator());
+		segmentJson.put("durationDenominator", symbol.segment.duration.getDenominator());
+		segmentJson.put("dotCount", symbol.segment.dotCount);
+		
+		if (symbol.segment.note != null) {
+		    ObjectNode noteJson = segmentJson.putObject("note");
+		    noteJson.put("id", symbol.segment.note.id);
+
+		    ObjectNode notePitchJson = noteJson.putObject("pitch");
+		    notePitchJson.put("noteName", symbol.segment.note.pitch.noteName.baseValue);
+		    notePitchJson.put("octave", symbol.segment.note.pitch.octave);
+
+		}
+	    }
+	}
+
+	StringWriter writer = new StringWriter();
+	mapper.writeValue(writer, symbolsJson); 
+
+	return ok(writer.toString());
+  }
+
 
   public static Result blockInfo(Long tuneId, Integer position) throws IOException {
       // TODO
@@ -101,12 +153,12 @@ public class JsonApi extends Controller {
       return ok("");
   }
 
-    public static Result preset(Long id) {
+    public static Result preset(Long id) throws DaoException {
 	Preset preset = Preset.get.execute(id);
 	return ok(preset.js);
     }
 
-    public static Result newPreset() {
+    public static Result newPreset() throws DaoException {
 	JsonNode node = request().body().asJson();
 	JsonNode nameNode = node.get("name");
 	JsonNode jsNode = node.get("js");

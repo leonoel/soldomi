@@ -1,30 +1,45 @@
 package utils;
 
+import models.Symbol;
+import models.Symbol.SymbolType;
+
 public enum DurationSymbol {
-    UNDEFINED           (0L, "undefined"),
-    SIXTY_FOURTH        (1L, "sixty_fourth"), // Quadruple Croche
-    THIRTY_SECOND       (2L, "thirty_second"), // Triple Croche
-    SIXTEENTH           (4L, "sixteenth"), // Dble Croche
-    EIGHTH              (8L, "eighth"), // Croche
-    QUARTER            (16L, "quarter"), // Noire
-    HALF               (32L, "half"), // Blanche
-    WHOLE              (64L, "whole"); // Ronde
+    UNDEFINED           (0L,
+			 null,
+			 null),
+    SIXTY_FOURTH        (1L,
+			 SymbolType.SIXTY_FOURTH,
+			 SymbolType.SIXTY_FOURTH_R), // Quadruple Croche
+    THIRTY_SECOND       (2L,
+			 SymbolType.THIRTY_SECOND,
+			 SymbolType.THIRTY_SECOND_R), // Triple Croche
+    SIXTEENTH           (4L,
+			 SymbolType.SIXTEENTH,
+			 SymbolType.SIXTEENTH_R), // Dble Croche
+    EIGHTH              (8L,
+			 SymbolType.EIGHTH,
+			 SymbolType.EIGHTH_R), // Croche
+    QUARTER             (16L,
+			 SymbolType.QUARTER,
+			 SymbolType.QUARTER_R), // Noire
+    HALF                (32L,
+			 SymbolType.HALF,
+			 SymbolType.HALF_R), // Blanche
+    WHOLE               (64L,
+			 SymbolType.WHOLE,
+			 SymbolType.WHOLE_R); // Ronde
 
-    public Long baseDuration;
-    public String baseValue;
+
+    public final Long baseDuration;
+    public final SymbolType noteSymbolType;
+    public final SymbolType restSymbolType;
     
-    private DurationSymbol(Long _baseDuration, String _baseValue)   {
+    private DurationSymbol(Long _baseDuration,
+			   SymbolType _noteSymbolType,
+			   SymbolType _restSymbolType)   {
 	baseDuration = _baseDuration;
-	baseValue = _baseValue;
-    }
-
-    public static DurationSymbol fromBaseValue(String baseValue) {
-	for (DurationSymbol symbol : DurationSymbol.values()) {
-	    if (symbol.baseValue.equals(baseValue)) {
-		return symbol;
-	    }
-	}
-	return null;
+	noteSymbolType = _noteSymbolType;
+	restSymbolType = _restSymbolType;
     }
 
     public Long duration(int dotCount) {
@@ -34,4 +49,5 @@ public enum DurationSymbol {
 	}
 	return duration;
     }
+
 }

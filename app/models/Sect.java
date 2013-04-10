@@ -1,9 +1,14 @@
 package models;
 
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class Sect {
     public Long id;
@@ -27,7 +32,7 @@ public class Sect {
 	return sect;
     }
 
-    public static Sect createNewSect(Tune tune, Long startTime) {
+    public static Sect createNewSect(Tune tune, Long startTime) throws DaoException {
 	Sect sect = new Sect(tune, startTime);
 	insert.execute(sect);
 	return sect;

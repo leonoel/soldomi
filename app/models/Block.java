@@ -1,17 +1,26 @@
 package models;
 
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import utils.DaoAction;
+import utils.DaoAction.DaoException;
 
 public class Block {
     public Long id;
     public Sect sect;
     public Long startTime;
+    public List<Symbol> symbols = new ArrayList<Symbol>();
 
     public Block() {
+    }
 
+    public Block(Long _id) {
+	id = _id;
     }
 
     public Block(Sect _sect, Long _startTime) {
@@ -23,7 +32,7 @@ public class Block {
 	return new Block(sect, startTime);
     }
 
-    public static Block createNewBlock(Sect sect, Long startTime) {
+    public static Block createNewBlock(Sect sect, Long startTime) throws DaoException {
 	Block block = new Block(sect, startTime);
         insert.execute(block);
 	return block;
@@ -41,6 +50,11 @@ public class Block {
 		throw new SQLException("Could not retrieve new block id");
 	    }
 	    block.id = resultSet.getLong(1);
+	    for (Symbol symbol : block.symbols) {
+		if (symbol.position.staff.id != null) {
+		    Symbol.insert.doSql(connection, symbol);
+		}
+	    }
 	    return block;
 	}
     };
