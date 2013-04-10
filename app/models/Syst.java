@@ -15,7 +15,7 @@ public class Syst {
     public Long id;
     public Tune tune;
     public String name;
-    public final List<Staff> staffs = new ArrayList<Staff>();
+    public final List<Staff> staves = new ArrayList<Staff>();
 
     public Syst() {
 
@@ -34,9 +34,9 @@ public class Syst {
 
     public static final Syst makeBlank(Tune tune, String name) {
 	Syst syst = new Syst(tune, name);
-	syst.staffs.add(Staff.makeBlank(syst,name));
-//      syst.staffs.add(Staff.createNewStaff(syst,name));
-//      syst.staffs.insert();
+	syst.staves.add(Staff.makeBlank(syst,name));
+//      syst.staves.add(Staff.createNewStaff(syst,name));
+//      syst.staves.insert();
 	return syst;
     }
 
@@ -52,7 +52,7 @@ public class Syst {
 		throw new SQLException("Could not retrieve new syst id");
 	    }
 	    syst.id = resultSet.getLong(1);
-	    for (Staff staff : syst.staffs) {
+	    for (Staff staff : syst.staves) {
 		Staff.insert.doSql(connection, staff);
 	    }
 	    return syst;
@@ -76,7 +76,7 @@ public class Syst {
 		syst.id = resultSet.getLong("id");
 		syst.name = resultSet.getString("name");
 		syst.tune = tune;
-		syst.staffs.addAll(Staff.getAllInSyst.doSql(connection, syst));
+		syst.staves.addAll(Staff.getAllInSyst.doSql(connection, syst));
 		systs.add(syst);
 	    }
 	    return systs;

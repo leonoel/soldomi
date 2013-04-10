@@ -183,7 +183,7 @@ public class NwcFileImporter {
 	for(nwcfile.Staff nwcStaff : nwcFile.getStaves()) {
 	    Syst syst = new Syst(tune, nwcStaff.getName());
 	    Staff staff = new Staff(syst, nwcStaff.getName());
-	    syst.staffs.add(staff);
+	    syst.staves.add(staff);
 	    tune.systs.add(syst);
 	    staffImporters.add(new StaffImporter(nwcStaff, staff));
 	}
