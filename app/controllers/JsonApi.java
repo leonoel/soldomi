@@ -99,6 +99,11 @@ public class JsonApi extends Controller {
 		    notePitchJson.put("octave", symbol.segment.note.pitch.octave);
 
 		}
+	    } else if (symbol.timeSignature != null) {
+		ObjectNode timeSignatureJson = symbolJson.putObject("timeSignature");
+		timeSignatureJson.put("id", symbol.timeSignature.id);
+		timeSignatureJson.put("beatCount", symbol.timeSignature.beatCount);
+		timeSignatureJson.put("beatValue", symbol.timeSignature.beatValue.baseValue);
 	    }
 	}
 

@@ -28,7 +28,8 @@ public class Symbol {
     public enum SymbolRole {
 	REST(true),
 	NOTE(true),
-	CLEF(false);
+	CLEF(false),
+	TIME_SIGNATURE(false);
 	public final boolean isSegment;
 	private SymbolRole(boolean isSegment) {
 	    this.isSegment = isSegment;
@@ -53,7 +54,10 @@ public class Symbol {
 	TREBLE_CLEF("treble_clef", SymbolRole.CLEF),
 	BASS_CLEF("bass_clef", SymbolRole.CLEF),
 	ALTO_CLEF("alto_clef", SymbolRole.CLEF),
-	TENOR_CLEF("tenor_clef", SymbolRole.CLEF);
+	TENOR_CLEF("tenor_clef", SymbolRole.CLEF),
+	STANDARD_TIME_SIGNATURE("standard_time_signature", SymbolRole.TIME_SIGNATURE),
+	ALLA_BREVE("alla_breve", SymbolRole.TIME_SIGNATURE),
+	COMMON_TIME("common_time", SymbolRole.TIME_SIGNATURE);
 
 	public final String baseValue;
 	public final SymbolRole role;
@@ -78,6 +82,7 @@ public class Symbol {
     public Fraction startTime;
     public SymbolType symbolType;
     public Segment segment;
+    public TimeSignature timeSignature;
 
     public Symbol() {
     }
@@ -103,6 +108,8 @@ public class Symbol {
 	    for (Symbol symbol : symbols) {
 		if (symbol.symbolType.role.isSegment) {
 		    symbol.segment = Segment.getFromSymbol.doSql(connection, symbol);
+		} else if (SymbolType.STANDARD_TIME_SIGNATURE == symbol.symbolType) {
+		    symbol.timeSignature = TimeSignature.getFromSymbol.doSql(connection, symbol);
 		}
 	    }
 	    return symbols;
@@ -127,6 +134,9 @@ public class Symbol {
 	    symbol.id = resultSet.getLong(1);
 	    if (symbol.segment != null) {
 		symbol.segment = Segment.insert.doSql(connection, symbol.segment);
+	    }
+	    if (symbol.timeSignature != null) {
+		symbol.timeSignature = TimeSignature.insert.doSql(connection, symbol.timeSignature);
 	    }
 	    return symbol;
 	}

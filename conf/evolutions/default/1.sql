@@ -69,6 +69,14 @@ create table note (
   primary key (id)
 );
 
+create table time_signature (
+  id                        bigint not null auto_increment,
+  symbol_id                 bigint not null,
+  beat_count                int,
+  beat_value                varchar(255),
+  primary key (id)
+);
+
 create table preset (
   id                        bigint not null auto_increment,
   name                      varchar(255),

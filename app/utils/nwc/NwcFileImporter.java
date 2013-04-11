@@ -18,6 +18,8 @@ import models.Symbol.Position;
 import models.Symbol.SymbolType;
 import models.Tuplet;
 import models.Note;
+import models.TimeSignature;
+import models.TimeSignature.NoteValue;
 
 import utils.DurationSymbol;
 import utils.Clef;
@@ -28,9 +30,9 @@ public class NwcFileImporter {
 
     private final class StaffImporter {
 	public final Staff staff;
-	public Fraction currentTime;
-	public Clef currentClef;
-	public Iterator<nwcfile.SymbolContainer> symbolContainerIterator;
+	private Fraction currentTime;
+	private Clef currentClef;
+	private Iterator<nwcfile.SymbolContainer> symbolContainerIterator;
 	private Tuplet currentTuplet;
 	
 
@@ -112,6 +114,23 @@ public class NwcFileImporter {
 	    incrementTime(duration);
 	}
 
+	private void addTimeSignature(nwcfile.TimeSignature nwcTimeSignature) {
+	    Symbol symbol = new Symbol();
+	    symbol.position = new Position(staff, currentBlock);
+	    symbol.startTime = currentTime;
+	    symbol.symbolType = toSymbolType(nwcTimeSignature.getStyle());
+	    
+	    if (SymbolType.STANDARD_TIME_SIGNATURE == symbol.symbolType) {
+		symbol.timeSignature = new TimeSignature();
+		symbol.timeSignature.symbol = symbol;
+		symbol.timeSignature.beatCount = nwcTimeSignature.getBeatCount().intValue();
+		symbol.timeSignature.beatValue = toNoteValue(nwcTimeSignature.getBeatValue());
+	    }
+
+	    staff.symbols.add(symbol);
+	    currentBlock.symbols.add(symbol);
+	}
+
 	private void incrementTime(Fraction duration) {
 	    currentTime = currentTime.add(duration);
 	    if (maxTime.compareTo(currentTime) < 0) {
@@ -134,8 +153,7 @@ public class NwcFileImporter {
 		    break;
 		}
 		case TIME_SIGNATURE: {
-		    nwcfile.TimeSignature nwcTimeSignature = (nwcfile.TimeSignature) symbolContainer.getSymbol();
-		    // TODO
+		    addTimeSignature((nwcfile.TimeSignature) symbolContainer.getSymbol());
 		    break;
 		}
 		case KEY_SIGNATURE: {
@@ -245,6 +263,19 @@ public class NwcFileImporter {
 	}
     }
 
+    private static SymbolType toSymbolType(nwcfile.TimeSignature.Style style) {
+	switch(style) {
+	case COMMON_TIME:
+	    return SymbolType.COMMON_TIME;
+	case ALLA_BREVE:
+	    return SymbolType.ALLA_BREVE;
+	case STANDARD:
+	    return SymbolType.STANDARD_TIME_SIGNATURE;
+	default:
+	    return null;
+	}
+    }
+
     private static Clef toClef(nwcfile.Clef clef) {
 	switch(clef.getSymbol()) {
 	case TREBLE:
@@ -281,22 +312,22 @@ public class NwcFileImporter {
 	}
     }
 
-    private static DurationSymbol toDurationSymbol(nwcfile.TimeSignature.BeatValue beatValue) {
+    private static NoteValue toNoteValue(nwcfile.TimeSignature.BeatValue beatValue) {
 	switch(beatValue) {
 	case WHOLE:
-	    return DurationSymbol.WHOLE;
+	    return NoteValue.WHOLE;
 	case HALF:
-	    return DurationSymbol.HALF;
+	    return NoteValue.HALF;
 	case QUARTER:
-	    return DurationSymbol.QUARTER;
+	    return NoteValue.QUARTER;
 	case EIGHTH:
-	    return DurationSymbol.EIGHTH;
+	    return NoteValue.EIGHTH;
 	case SIXTEENTH:
-	    return DurationSymbol.SIXTEENTH;
+	    return NoteValue.SIXTEENTH;
 	case THIRTY_SECOND:
-	    return DurationSymbol.THIRTY_SECOND;
+	    return NoteValue.THIRTY_SECOND;
 	default:
-	    return DurationSymbol.UNDEFINED;
+	    return null;
 	}
     }
 
