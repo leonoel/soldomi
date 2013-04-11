@@ -1,1 +1,1 @@
-/home/larat/Codes/Britney/vexflow/build/vexflow/vexflow-min.js
+../../../vexflow/build/vexflow/vexflow-min.js

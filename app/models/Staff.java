@@ -63,7 +63,7 @@ public class Staff {
     public static final DaoAction<Syst, List<Staff>> getAllInSyst = new DaoAction<Syst, List<Staff>>() {
 	@Override public List<Staff> doSql(Connection connection,
 					   Syst syst) throws SQLException {
-	    List<Staff> staffs = new ArrayList<Staff>();
+	    List<Staff> staves = new ArrayList<Staff>();
 	    PreparedStatement stat = connection.prepareStatement(
 								 "select id, " +
 								 "name " +
@@ -76,9 +76,9 @@ public class Staff {
 		Staff staff = new Staff();
 		staff.id = resultSet.getLong("id");
 		staff.name = resultSet.getString("name");
-		staffs.add(staff);
+		staves.add(staff);
 	    }
-	    return staffs;
+	    return staves;
 	}
     };
 

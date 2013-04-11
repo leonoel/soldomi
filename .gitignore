@@ -1,5 +1,6 @@
 *~
 *.BAK
+*.bak
 *.swp
 tmp
 logs

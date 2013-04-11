@@ -1,199 +1,139 @@
 var SolDoMi = (function() {
 
-    // Private
+  // Private
+  var canvas;
+  var url;
+  var renderer;
+  var ctx;
+  var tune;
 
-    var _canvas;
-    var _url;
-    var _renderer;
-    var _ctx;
+  var renderTune = function(tune) {
+    tune = tune;
+    var xShift          = 30;
+    var lineHeight      = 80;
+    var measureMinWidth = 300;
+    var keySettingWidth = 80;
+    var xCoor = xShift, yCoor = 0;
 
-    var _renderTune = function(tune) {
-	_tune = tune;
-	_tune.measures = new Array();
-	var xShift          = 10;
-	var lineHeight      = 80;
-	var measureMinWidth = 300;
-	var keySettingWidth = 80;
-	var xCoor = xShift, yCoor = 0;
-	for(var measureId = 0; measureId < tune.measureCount; measureId++) {
-	    _tune.measures[measureId] = {};
-	    var lines = new Array(); 
-	    for (var staffId in _tune.staves) {
-		lines[staffId]  = {};
-		lines[staffId]["vexFlowStaff"] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth); 
-		if(measureId == _tune.measureCount -1) lines[staffId].vexFlowStaff.setEndBarType(Vex.Flow.Barline.type.END);
-		yCoor += lineHeight;
-	    }
-	    _tune.measures[measureId]["lines"] = lines;
-	    $.getJSON(_url + "/measures/" + measureId, _renderMeasure);
-	    for(staffId in _tune.staves) {
-		xCoor  += _tune.measures[measureId].lines[staffId].vexFlowStaff.width;
-		break;
-	    }
-	    yCoor = 0;
-	}
+/*
+  // Essai Pourrave
+  var stave = new Array();
+  stave[0]  = new Vex.Flow.Stave(xCoor,         0, measureMinWidth);
+  stave[1]  = new Vex.Flow.Stave(xCoor,lineHeight, measureMinWidth);
+  // Add a treble clef
+  stave[0].addClef("treble");
+  stave[0].setContext(ctx).draw();
+  stave[1].addClef("bass");
+  stave[1].setContext(ctx).draw();
+  var notes = [
+    // Dotted eighth E##
+    new Vex.Flow.StaveNote({ keys: ["e##/5"], duration: "8d" }).
+      addAccidental(0, new Vex.Flow.Accidental("##")).addDotToAll(),
+    // Sixteenth Eb
+    new Vex.Flow.StaveNote({ keys: ["eb/5"], duration: "16" }).
+      addAccidental(0, new Vex.Flow.Accidental("#")),
+    // Half D
+    new Vex.Flow.StaveNote({ keys: ["d/5"], duration: "h" }),
+    // Quarter Cm#5
+    new Vex.Flow.StaveNote({ keys: ["c/5", "eb/5", "g#/5"], duration: "q" }).
+      addAccidental(1, new Vex.Flow.Accidental("b")).
+      addAccidental(2, new Vex.Flow.Accidental("#"))
+  ];
+  // Helper function to justify and draw a 4/4 voice
+  Vex.Flow.Formatter.FormatAndDraw(ctx, stave[0], notes);
+  var connectors = new Vex.Flow.StaveConnector(stave[0],stave[1]);
+  connectors.setType(Vex.Flow.StaveConnector.type.BRACE).setContext(ctx).draw();
+*/
+    // Initialization. vexFlowStaves is a table of nStaves*nBlocks vexFlowStaves
+    var staffCounter   = 0;
+    var blockCounter   = 0;
+    tune.vexFlowStaves = new Array();
+    for(var syst in tune.systs) {
+      for(var staff in tune.systs[syst].staves) {
+        tune.vexFlowStaves[staffCounter] = new Array();
+        staffCounter++;
+      }
     }
 
+    for(var sect in tune.sects) {
+      for(var block in tune.sects[sect].blocks) {
+        staffCounter = 0;
+        for(var syst in tune.systs) {
+          for(var staff in tune.systs[syst].staves) {
+            tune.vexFlowStaves[staffCounter][blockCounter] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);
+ //           tune.vexFlowStaves[staffCounter][blockCounter].setContext(ctx).draw();
+            yCoor += lineHeight;
+            staffCounter++;
+          }
+        }
+        xCoor += tune.vexFlowStaves[0][blockCounter].width;
+        yCoor  = 0;
+        blockCounter++;
+      }
+    }
 
-    var _renderMeasure = function(measure) {
-	//    NoteWar.measure = measure;
-	var measureId = measure.measureId;
-	var block     = _tune.measures[measureId].this;
-	for (var staffId in _tune.staves) {
-	    //	block.lines[staffId]["segments"] = new Array();
-	    _tune.measures[measureId].lines[staffId]["segments"] = new Array();
-	} 
+//	if(blockCounter == 0) {
+    // Add First Blocks Ornaments (connectors, Clef, TimeSignature, etc)
 
-	for (var i in measure.segments) {
-	var segment  = measure.segments[i];
-	var staffId  = segment.staffId;
-	    var inter = _formatKeys(segment);
-	    _tune.measures[measureId].lines[staffId].segments.push(
-		new Vex.Flow.StaveNote(
-		    { keys: [_formatKeys(segment)],
-		      duration: _formatDuration(segment),
-		      clef: _formatClef(segment),
-		      //		  stem_direction : -1
-		    }));
-	    _addOrnament(_tune.measures[measureId].lines[staffId].segments[i],segment);
-	}
-	
-    
-	for (var staffId in _tune.staves) {
-	    var vexFlowStaff = _tune.measures[0].lines[staffId].vexFlowStaff;
-	    if(measureId == 0) { // First Measure, set keySignature
-		vexFlowStaff.width += 0;
-		vexFlowStaff.addClef(_tune.measures[measureId].lines[staffId].segments[0].clef);
-		vexFlowStaff.addKeySignature(measure.keySignature);
-		vexFlowStaff.addTimeSignature(_timeSignature(measure));
+    tune.connectors = new Vex.Flow.StaveConnector(tune.vexFlowStaves[0][0],tune.vexFlowStaves[staffCounter-1][0]);
+    tune.connectors.setType(Vex.Flow.StaveConnector.type.SINGLE);
+    tune.connectors.setContext(ctx).draw();
+//	}
 
-		//        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.width += 0;
-		//        NoteWar.tune.measures[0].lines[staffId].vexFlowStaff.addClef(NoteWar.tune.measures[measureId].lines[staffId].segments[0].clef).addTimeSignature(NoteWar.timeSignature(measure));
-	    }
-	    _tune.measures[measureId].lines[staffId].vexFlowStaff.setContext(_ctx).draw();
-	    Vex.Flow.Formatter.FormatAndDraw(_ctx,
-					     _tune.measures[measureId].lines[staffId].vexFlowStaff,
-					     _tune.measures[measureId].lines[staffId].segments);
-	}
-	/*
-	  for (var staffId in NoteWar.tune.staves) {
-	  var voice = new Vex.Flow.Voice({
-	  num_beats: 4,
-	  beat_value: 4,
-	  resolution: Vex.Flow.RESOLUTION
-	  });
-	  voice.addTickables(NoteWar.tune.lines[staffId].measures[measureId].segments);
-	  var formatter = new Vex.Flow.Formatter().joinVoices([voice]).format([voice], 500);
-	  voice.draw(NoteWar.ctx, NoteWar.tune.lines[staffId].measures[measureId]);
+    staffCounter = 0;
+    blockCounter--;
+    for(var syst in tune.systs) {
+      for(var staff in tune.systs[syst].staves) {
+        tune.vexFlowStaves[staffCounter][blockCounter].setEndBarType(Vex.Flow.Barline.type.END);
+        staffCounter++;
+      }
+    }
+
+    // Render on Screen
+    blockCounter = 0;
+    for(var sect in tune.sects) {
+      for(var block in sect.blocks) {
+        staffCounter = 0;
+        for(var syst in tune.systs) {
+          for(var staff in syst.staves) {
+            tune.vexFlowStaff[staffCounter][blockCounter].setContext(ctx).draw();
+     //       Vex.Flow.Formatter.FormatAndDraw(ctx,tune.vexFlowStaff[staffCounter][blockCounter]);
 	  }
-	*/
-    }
-
-    var _addOrnament = function(vexFlowSegment, JSONSegment) {
-	if(JSONSegment.accidental < 5) {
-	    vexFlowSegment.addAccidental(0, new Vex.Flow.Accidental(_StringFromAccidental(JSONSegment.accidental)));
 	}
-	var nDots = JSONSegment.dot;
-	while(nDots>0) {
-	    vexFlowSegment.addDotToAll();
-	    nDots--;
-	}
+      }
     }
 
-    var _StringFromAccidental = function(accidental) {
-	switch(accidental) {
-	case 0: return "#";
-	case 1: return "b";
-	case 2: return "n";
-	case 3: return "##";
-	case 4: return "bb";
-	default: return ""; // TODO!!!! Need to define properly AUTO accidental. Pretty hard!
-	}
+/*
+        var lines = new Array(); 
+        for (var staffId in tune.staves) {
+    	lines[staffId]  = {};
+    	lines[staffId]["vexFlowStaff"] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth); 
+    	if(measureId == tune.measureCount -1) lines[staffId].vexFlowStaff.setEndBarType(Vex.Flow.Barline.type.END);
+    	yCoor += lineHeight;
+        }
+        tune.measures[measureId]["lines"] = lines;
+//	    $.getJSON(url + "/measures/" + measureId, renderMeasure);
+        for(staffId in tune.staves) {
+    	xCoor  += tune.measures[measureId].lines[staffId].vexFlowStaff.width;
+    	break;
+        }
+        yCoor = 0;
     }
-
-    var _formatKeys = function(segment) {
-	return segment.note.toLowerCase() + _StringFromAccidental(segment.accidental)+ '/' + segment.octave;
-	return segment.note.toLowerCase() + '/' + segment.octave;
-    }
-
-    var _timeSignature = function(measure) {
-	var count,value;
-	count = measure.beatCount;
-	switch(measure.beatValue) {
-	case "QUARTER":
-	    value = "4";
-	    break;
-	default: 
-	    document.write("Please inform what this beatValue is:"+measure.beatValue+"<br>");
-	    break;
-	}
-	return count+"/"+value;
-    }
-
-    var _formatDuration = function(segment) {
-	var duration;
-	switch(segment.durationSymbol) {
-	case "WHOLE": // Ronde
-	    duration = "w";
-	    break;    
-	case "HALF":          // Blanche
-	case "DOTTED_HALF":   // Blanche Pointee
-	case "D_DOTTED_HALF": // Blanche Dble Pointee
-	case "THIRD":         // Triolet de Blanche
-	    duration = "h";
-	    break;
-	case "QUARTER":          // Noire
-	case "DOTTED_QUARTER":   // Noire Pointee
-	case "D_DOTTED_QUARTER": // Noire Dble Pointe
-	case "FIFTH":            // Quintolet de Noire
-	case "SIXTH":            // Triolet de Noire
-	case "SEVENTH":          // Septolet de Noire
-	    duration = "q";
-	    break;
-	case "EIGHTH":           // Croche
-	case "DOTTED_EIGHTH":    // Croche Pointee
-	case "D_DOTTED_EIGHTH":  // Croche Dble Pointee
-	case "TWELFTH":          // Triolet de Croche
-	    duration = "8";
-	    break; 
-	case "SIXTEENTH":          // Double Croche
-	case "DOTTED_SIXTEENTH":   // Double Croche Pointee
-	case "D_DOTTED_SIXTEENTH": // Double Croche Double pointee
-	case "TWENTY_FOURTH":      // Triolet de Double
-	    duration = "16";
-	    break; 
-	case "THIRTY_SECOND":        // Triple Croche
-	case "DOTTED_THIRTY_SECOND": // Triple Croche pointee
-	    duration = "32";
-	    break; 
-	case "SIXTY_FOURTH":   // Quadruple Croche
-	    duration = "64";
-	    break; 
-	default:
-	    break;
-	}
-	var rest = segment.rest ? "r" : "";
-	return duration + rest;
-    }
-
-    var _formatClef = function(segment) {
-	return segment.clef.toLowerCase();
-    }
+*/
+  }
 
 
-    // Public
+  // Public
 
-    var SolDoMi = {};
+  var SolDoMi = {};
 
-    SolDoMi.init = function(canvas, url) {
-	_canvas = canvas;
-	_url = url;
-	_renderer = new Vex.Flow.Renderer(_canvas,
-					  Vex.Flow.Renderer.Backends.CANVAS);
-	_ctx = _renderer.getContext();
+  SolDoMi.init = function(_canvas,_url) {
+      canvas   = _canvas;
+      url      = _url;
+      renderer = new Vex.Flow.Renderer(canvas,Vex.Flow.Renderer.Backends.CANVAS);
+      ctx      = renderer.getContext();
+      $.getJSON(url, renderTune);
+  }
 
-	$.getJSON(_url, _renderTune);
-    }
-
-    return SolDoMi;
+  return SolDoMi;
 })();

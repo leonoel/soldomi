@@ -42,9 +42,9 @@ public class JsonApi extends Controller {
 	    ObjectNode systJson = systsJson.addObject();
 	    systJson.put("id", syst.id);
 	    systJson.put("name", syst.name);
-	    ArrayNode staffsJson = systJson.putArray("staffs");
-	    for (Staff staff: syst.staffs) {
-		ObjectNode staffJson = staffsJson.addObject();
+	    ArrayNode stavesJson = systJson.putArray("staves");
+	    for (Staff staff: syst.staves) {
+		ObjectNode staffJson = stavesJson.addObject();
 		staffJson.put("id", staff.id);
 		staffJson.put("name", staff.name);
 	    }
