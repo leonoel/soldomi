@@ -79,7 +79,7 @@ public class JsonApi extends Controller {
 	for (Symbol symbol : symbols) {
 	    ObjectNode symbolJson = symbolsJson.addObject();
 	    symbolJson.put("id", symbol.id);
-	    symbolJson.put("type", symbol.symbolType.baseValue);
+	    symbolJson.put("type", symbol.symbolType.name());
 	    symbolJson.put("startTimeNumerator", symbol.startTime.getNumerator());
 	    symbolJson.put("startTimeDenominator", symbol.startTime.getDenominator());
 
@@ -95,25 +95,26 @@ public class JsonApi extends Controller {
 		    noteJson.put("id", symbol.segment.note.id);
 
 		    ObjectNode notePitchJson = noteJson.putObject("pitch");
-		    notePitchJson.put("noteName", symbol.segment.note.pitch.noteName.baseValue);
+		    notePitchJson.put("noteName", symbol.segment.note.pitch.noteName.name());
 		    notePitchJson.put("octave", symbol.segment.note.pitch.octave);
-
+		    
+		    noteJson.put("accidental", symbol.segment.note.accidental.name());
 		}
 	    } else if (symbol.timeSignature != null) {
 		ObjectNode timeSignatureJson = symbolJson.putObject("timeSignature");
 		timeSignatureJson.put("id", symbol.timeSignature.id);
 		timeSignatureJson.put("beatCount", symbol.timeSignature.beatCount);
-		timeSignatureJson.put("beatValue", symbol.timeSignature.beatValue.baseValue);
+		timeSignatureJson.put("beatValue", symbol.timeSignature.beatValue.name());
 	    } else if (symbol.keySignature != null) {
 		ObjectNode keySignatureJson = symbolJson.putObject("keySignature");
 		keySignatureJson.put("id", symbol.keySignature.id);
-		keySignatureJson.put("a", symbol.keySignature.a.baseValue);
-		keySignatureJson.put("b", symbol.keySignature.b.baseValue);
-		keySignatureJson.put("c", symbol.keySignature.c.baseValue);
-		keySignatureJson.put("d", symbol.keySignature.d.baseValue);
-		keySignatureJson.put("e", symbol.keySignature.e.baseValue);
-		keySignatureJson.put("f", symbol.keySignature.f.baseValue);
-		keySignatureJson.put("g", symbol.keySignature.g.baseValue);
+		keySignatureJson.put("a", symbol.keySignature.a.name());
+		keySignatureJson.put("b", symbol.keySignature.b.name());
+		keySignatureJson.put("c", symbol.keySignature.c.name());
+		keySignatureJson.put("d", symbol.keySignature.d.name());
+		keySignatureJson.put("e", symbol.keySignature.e.name());
+		keySignatureJson.put("f", symbol.keySignature.f.name());
+		keySignatureJson.put("g", symbol.keySignature.g.name());
 	    }
 	}
 

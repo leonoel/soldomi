@@ -22,10 +22,10 @@ import models.TimeSignature;
 import models.TimeSignature.NoteValue;
 import models.KeySignature;
 import models.KeySignature.NotePitch;
+import models.Note.Accidental;
 
 import utils.DurationSymbol;
 import utils.Clef;
-import utils.Accidental;
 
 
 public class NwcFileImporter {
@@ -88,7 +88,7 @@ public class NwcFileImporter {
 	    if (!isRest) {
 		Note note = new Note();
 		note.pitch = currentClef.pitch.addInterval((int) nwcSegment.getRelativePitch());
-		//note.accidental       = toAccidental(nwcSegment.getAccidental()); 
+	        note.accidental       = toAccidental(nwcSegment.getAccidental()); 
 		note.segment = segment;
 
 		segment.note = note;

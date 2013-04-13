@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 import utils.DaoAction;
 import utils.DaoAction.DaoException;
+import utils.EnumBaseMapper;
 
 import org.apache.commons.math3.fraction.Fraction;
 
@@ -38,44 +39,33 @@ public class Symbol {
     }
 
     public enum SymbolType {
-	WHOLE("whole", SymbolRole.NOTE),
-	WHOLE_R("whole_r", SymbolRole.REST),
-	HALF("half", SymbolRole.NOTE),
-	HALF_R("half_r", SymbolRole.REST),
-	QUARTER("quarter", SymbolRole.NOTE),
-	QUARTER_R("quarter_r", SymbolRole.REST),
-	EIGHTH("eighth", SymbolRole.NOTE),
-	EIGHTH_R("eighth_r", SymbolRole.REST),
-	SIXTEENTH("sixteenth", SymbolRole.NOTE),
-	SIXTEENTH_R("sixteenth_r", SymbolRole.REST),
-	THIRTY_SECOND("thirty_second", SymbolRole.NOTE),
-	THIRTY_SECOND_R("thirty_second_r", SymbolRole.REST),
-	SIXTY_FOURTH("sixty_fourth", SymbolRole.NOTE),
-	SIXTY_FOURTH_R("sixty_fourth_r", SymbolRole.REST),
-	TREBLE_CLEF("treble_clef", SymbolRole.CLEF),
-	BASS_CLEF("bass_clef", SymbolRole.CLEF),
-	ALTO_CLEF("alto_clef", SymbolRole.CLEF),
-	TENOR_CLEF("tenor_clef", SymbolRole.CLEF),
-	KEY_SIGNATURE("key_signature", SymbolRole.KEY_SIGNATURE),
-	STANDARD_TIME_SIGNATURE("standard_time_signature", SymbolRole.TIME_SIGNATURE),
-	ALLA_BREVE("alla_breve", SymbolRole.TIME_SIGNATURE),
-	COMMON_TIME("common_time", SymbolRole.TIME_SIGNATURE);
+	WHOLE(SymbolRole.NOTE),
+	WHOLE_R(SymbolRole.REST),
+	HALF(SymbolRole.NOTE),
+	HALF_R(SymbolRole.REST),
+	QUARTER(SymbolRole.NOTE),
+	QUARTER_R(SymbolRole.REST),
+	EIGHTH(SymbolRole.NOTE),
+	EIGHTH_R(SymbolRole.REST),
+	SIXTEENTH(SymbolRole.NOTE),
+	SIXTEENTH_R(SymbolRole.REST),
+	THIRTY_SECOND(SymbolRole.NOTE),
+	THIRTY_SECOND_R(SymbolRole.REST),
+	SIXTY_FOURTH(SymbolRole.NOTE),
+	SIXTY_FOURTH_R(SymbolRole.REST),
+	TREBLE_CLEF(SymbolRole.CLEF),
+	BASS_CLEF(SymbolRole.CLEF),
+	ALTO_CLEF(SymbolRole.CLEF),
+	TENOR_CLEF(SymbolRole.CLEF),
+	KEY_SIGNATURE(SymbolRole.KEY_SIGNATURE),
+	STANDARD_TIME_SIGNATURE(SymbolRole.TIME_SIGNATURE),
+	ALLA_BREVE(SymbolRole.TIME_SIGNATURE),
+	COMMON_TIME(SymbolRole.TIME_SIGNATURE);
 
-	public final String baseValue;
 	public final SymbolRole role;
 
-	private SymbolType(String baseValue,
-			   SymbolRole role) {
-	    this.baseValue = baseValue;
+	private SymbolType(SymbolRole role) {
 	    this.role = role;
-	}
-	public static SymbolType fromBaseValue(String baseValue) {
-	    for (SymbolType type : SymbolType.values()) {
-		if (type.baseValue.equals(baseValue)) {
-		    return type;
-		}
-	    }
-	    return null;
 	}
     }
 
@@ -89,6 +79,8 @@ public class Symbol {
 
     public Symbol() {
     }
+
+    private static final EnumBaseMapper<SymbolType> TYPE_MAPPER = new EnumBaseMapper<SymbolType>(SymbolType.class);
 
     public static final DaoAction<Position, List<Symbol>> getAll = new DaoAction<Position, List<Symbol>>() {
 	@Override public List<Symbol> doSql(Connection connection, final Position position) throws SQLException {
@@ -105,7 +97,7 @@ public class Symbol {
 		symbol.id = resultSet.getLong("id");
 		symbol.position = position;
 		symbol.startTime = new Fraction(resultSet.getInt("start_time_n"), resultSet.getInt("start_time_d"));
-		symbol.symbolType = SymbolType.fromBaseValue(resultSet.getString("symbol_type"));
+		symbol.symbolType = TYPE_MAPPER.fromBase(resultSet.getString("symbol_type"));
 		symbols.add(symbol);
 	    }
 	    for (Symbol symbol : symbols) {
@@ -130,7 +122,7 @@ public class Symbol {
 	    stat.setLong(2, symbol.position.staff.id);
 	    stat.setLong(3, symbol.startTime.getNumerator());
 	    stat.setLong(4, symbol.startTime.getDenominator());
-	    stat.setString(5, symbol.symbolType.baseValue);
+	    stat.setString(5, TYPE_MAPPER.toBase(symbol.symbolType));
 	    stat.executeUpdate();
 	    ResultSet resultSet = stat.getGeneratedKeys();
 	    if(!resultSet.next()) {

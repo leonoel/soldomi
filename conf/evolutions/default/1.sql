@@ -66,6 +66,7 @@ create table note (
   segment_id                bigint not null,
   note_name                 varchar(255),
   octave                    int,
+  accidental		    varchar(255),
   primary key (id)
 );
 
