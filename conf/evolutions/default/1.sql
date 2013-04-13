@@ -77,6 +77,19 @@ create table time_signature (
   primary key (id)
 );
 
+create table key_signature (
+  id                        bigint not null auto_increment,
+  symbol_id                 bigint not null,
+  a                         varchar(255),
+  b                         varchar(255),
+  c                         varchar(255),
+  d                         varchar(255),
+  e                         varchar(255),
+  f                         varchar(255),
+  g                         varchar(255),
+  primary key(id)
+);
+
 create table preset (
   id                        bigint not null auto_increment,
   name                      varchar(255),
@@ -95,4 +108,6 @@ drop table if exists symbol;
 drop table if exists segment;
 drop table if exists note;
 drop table if exists tuplet;
+drop table if exists time_signature;
+drop table if exists key_signature;
 drop table if exists preset;

@@ -29,6 +29,7 @@ public class Symbol {
 	REST(true),
 	NOTE(true),
 	CLEF(false),
+	KEY_SIGNATURE(false),
 	TIME_SIGNATURE(false);
 	public final boolean isSegment;
 	private SymbolRole(boolean isSegment) {
@@ -55,6 +56,7 @@ public class Symbol {
 	BASS_CLEF("bass_clef", SymbolRole.CLEF),
 	ALTO_CLEF("alto_clef", SymbolRole.CLEF),
 	TENOR_CLEF("tenor_clef", SymbolRole.CLEF),
+	KEY_SIGNATURE("key_signature", SymbolRole.KEY_SIGNATURE),
 	STANDARD_TIME_SIGNATURE("standard_time_signature", SymbolRole.TIME_SIGNATURE),
 	ALLA_BREVE("alla_breve", SymbolRole.TIME_SIGNATURE),
 	COMMON_TIME("common_time", SymbolRole.TIME_SIGNATURE);
@@ -83,6 +85,7 @@ public class Symbol {
     public SymbolType symbolType;
     public Segment segment;
     public TimeSignature timeSignature;
+    public KeySignature keySignature;
 
     public Symbol() {
     }
@@ -110,6 +113,8 @@ public class Symbol {
 		    symbol.segment = Segment.getFromSymbol.doSql(connection, symbol);
 		} else if (SymbolType.STANDARD_TIME_SIGNATURE == symbol.symbolType) {
 		    symbol.timeSignature = TimeSignature.getFromSymbol.doSql(connection, symbol);
+		} else if (SymbolType.KEY_SIGNATURE == symbol.symbolType) {
+		    symbol.keySignature = KeySignature.getFromSymbol.doSql(connection, symbol);
 		}
 	    }
 	    return symbols;
@@ -137,6 +142,9 @@ public class Symbol {
 	    }
 	    if (symbol.timeSignature != null) {
 		symbol.timeSignature = TimeSignature.insert.doSql(connection, symbol.timeSignature);
+	    }
+	    if (symbol.keySignature != null) {
+		symbol.keySignature = KeySignature.insert.doSql(connection, symbol.keySignature);
 	    }
 	    return symbol;
 	}

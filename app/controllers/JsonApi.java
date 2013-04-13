@@ -104,6 +104,16 @@ public class JsonApi extends Controller {
 		timeSignatureJson.put("id", symbol.timeSignature.id);
 		timeSignatureJson.put("beatCount", symbol.timeSignature.beatCount);
 		timeSignatureJson.put("beatValue", symbol.timeSignature.beatValue.baseValue);
+	    } else if (symbol.keySignature != null) {
+		ObjectNode keySignatureJson = symbolJson.putObject("keySignature");
+		keySignatureJson.put("id", symbol.keySignature.id);
+		keySignatureJson.put("a", symbol.keySignature.a.baseValue);
+		keySignatureJson.put("b", symbol.keySignature.b.baseValue);
+		keySignatureJson.put("c", symbol.keySignature.c.baseValue);
+		keySignatureJson.put("d", symbol.keySignature.d.baseValue);
+		keySignatureJson.put("e", symbol.keySignature.e.baseValue);
+		keySignatureJson.put("f", symbol.keySignature.f.baseValue);
+		keySignatureJson.put("g", symbol.keySignature.g.baseValue);
 	    }
 	}
 

@@ -20,6 +20,8 @@ import models.Tuplet;
 import models.Note;
 import models.TimeSignature;
 import models.TimeSignature.NoteValue;
+import models.KeySignature;
+import models.KeySignature.NotePitch;
 
 import utils.DurationSymbol;
 import utils.Clef;
@@ -131,6 +133,26 @@ public class NwcFileImporter {
 	    currentBlock.symbols.add(symbol);
 	}
 
+	private void addKeySignature(nwcfile.KeySignature nwcKeySignature) {
+	    Symbol symbol = new Symbol();
+	    symbol.position = new Position(staff, currentBlock);
+	    symbol.startTime = currentTime;
+	    symbol.symbolType = SymbolType.KEY_SIGNATURE;
+	    
+	    symbol.keySignature = new KeySignature();
+	    symbol.keySignature.symbol = symbol;
+	    symbol.keySignature.a = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.A);
+	    symbol.keySignature.b = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.B);
+	    symbol.keySignature.c = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.C);
+	    symbol.keySignature.d = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.D);
+	    symbol.keySignature.e = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.E);
+	    symbol.keySignature.f = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.F);
+	    symbol.keySignature.g = toNotePitch(nwcKeySignature, nwcfile.KeySignature.Note.G);
+
+	    staff.symbols.add(symbol);
+	    currentBlock.symbols.add(symbol);
+	}
+
 	private void incrementTime(Fraction duration) {
 	    currentTime = currentTime.add(duration);
 	    if (maxTime.compareTo(currentTime) < 0) {
@@ -157,8 +179,7 @@ public class NwcFileImporter {
 		    break;
 		}
 		case KEY_SIGNATURE: {
-		    nwcfile.KeySignature nwcKeySignature = (nwcfile.KeySignature) symbolContainer.getSymbol();
-		    // TODO
+		    addKeySignature((nwcfile.KeySignature) symbolContainer.getSymbol());
 		    break;
 		}
 		case CLEF: {
@@ -362,5 +383,12 @@ public class NwcFileImporter {
 	    return Accidental.AUTO;
 	}
     }
+
+    private static NotePitch toNotePitch(nwcfile.KeySignature nwcKeySignature, nwcfile.KeySignature.Note note) {
+	return nwcKeySignature.isSharp(note) ? NotePitch.SHARP :
+	    nwcKeySignature.isFlat(note) ? NotePitch.FLAT :
+	    NotePitch.NATURAL;
+    }
+
 
 }
