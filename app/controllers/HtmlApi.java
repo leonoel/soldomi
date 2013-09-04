@@ -10,11 +10,13 @@ import play.mvc.*;
 import play.mvc.Http.*;
 import play.mvc.Http.MultipartFormData.*;
 
-import models.Tune;
-import models.Preset;
+//import models.Tune;
+//import models.Preset;
 import views.html.index;
 import views.html.tunes;
-import utils.nwc.NwcFileImporter;
+import org.soldomi.support.nwc175.*;
+import org.soldomi.support.nwc175.model.*;
+import org.soldomi.model.tune.*;
 import utils.DaoAction;
 import utils.DaoAction.DaoException;
 
@@ -49,12 +51,12 @@ public class HtmlApi extends Controller {
 	    String contentType = nwc.getContentType(); 
 	    File file = nwc.getFile();
 	    try {
-		nwcfile.NwcFileReader reader = new nwcfile.NwcFileReader(new FileInputStream(file));
-		nwcfile.NwcFile nwcfile = new nwcfile.NwcFile().unmarshall(reader);
+		NwcFileReader reader = new NwcFileReader(new FileInputStream(file));
+		NwcFile nwcfile = new NwcFile().unmarshall(reader);
 		Tune tune = NwcFileImporter.run(nwcfile);
 		tune = Tune.insert.execute(tune);
 		return redirect(routes.HtmlApi.showTune(tune.id));
-	    } catch (nwcfile.NwcFileException e) {
+	    } catch (NwcFileException e) {
 		flash("error", "Error parsing nwc file.");
 	    } catch (FileNotFoundException e) {
 		flash("error", "Error opening nwc file.");
