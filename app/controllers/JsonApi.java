@@ -170,11 +170,16 @@ public class JsonApi extends Controller {
   }
 
     public static Result preset(Long id) throws DaoException {
+        return ok("TODO");
+/*
 	Preset preset = Preset.get.execute(id);
 	return ok(preset.js);
+*/
     }
 
     public static Result newPreset() throws DaoException {
+        return ok("TODO");
+/*
 	JsonNode node = request().body().asJson();
 	JsonNode nameNode = node.get("name");
 	JsonNode jsNode = node.get("js");
@@ -190,6 +195,7 @@ public class JsonApi extends Controller {
 	preset.js = jsNode.getTextValue();
 	Preset.insert.execute(preset);
 	return ok(preset.id.toString());
+*/
     }
 
 }

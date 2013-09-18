@@ -36,13 +36,18 @@ public class HtmlApi extends Controller {
     public static Result createNew() throws DaoException {
 	DynamicForm requestData = Form.form().bindFromRequest();
 //	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
-        Tune tune = Tune.createNewTune(requestData.get("name"));
-	return redirect(routes.HtmlApi.showTune(tune.id));
+//        Tune tune = Tune.createNewTune(requestData.get("name"));
+	Tune tune = new Tune();
+	tune.name.set(requestData.get("name"));
+        TuneDao.insertTune.run(DB.getConnection(),tune);
+	return redirect(routes.HtmlApi.showTune(tune.id.get()));
     }
 
     public static Result deleteTune(Long id) throws DaoException {
-	Tune.delete.execute(id);
-	return redirect(routes.HtmlApi.tunes());
+// TODO: Implement the deleteTune method in TuneDao.java
+//	Tune.delete.execute(id);
+	return TODO;
+//	return redirect(routes.HtmlApi.tunes());
     }
 
     public static Result importNwc() throws DaoException {
@@ -56,8 +61,8 @@ public class HtmlApi extends Controller {
 		NwcFileReader reader = new NwcFileReader(new FileInputStream(file));
 		NwcFile nwcfile = new NwcFile().unmarshall(reader);
 		Tune tune = NwcFileImporter.run(nwcfile);
-		tune = Tune.insert.execute(tune);
-		return redirect(routes.HtmlApi.showTune(tune.id));
+		TuneDao.insertTune.run(DB.getConnection(),tune);
+		return redirect(routes.HtmlApi.showTune(tune.id.get()));
 	    } catch (NwcFileException e) {
 		flash("error", "Error parsing nwc file.");
 	    } catch (FileNotFoundException e) {
@@ -70,18 +75,20 @@ public class HtmlApi extends Controller {
     }
 
     public static Result showTune(Long id) throws DaoException {
-	Tune tune = Tune.get.execute(id);
+	Tune tune = new Tune();
+	tune.id.set(id);
+	TuneDao.getTune.run(DB.getConnection(),tune);
 	return ok(views.html.showTune.render(tune));
     }
 
     public static Result presets() throws DaoException {
-	List<Preset> presets = Preset.getAll.execute(null);
-	return ok(views.html.presets.render(presets));
+//	List<Preset> presets = Preset.getAll.execute(null);
+	return TODO; //ok(views.html.presets.render(presets));
     }
 
     public static Result deletePreset(Long id) throws DaoException {
-	Preset.delete.execute(id);
-	return redirect(routes.HtmlApi.presets());
+//	Preset.delete.execute(id);
+	return TODO; //redirect(routes.HtmlApi.presets());
     }
 
     public static Result sf2FileExtractor() {

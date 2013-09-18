@@ -9,7 +9,8 @@ public class Preset {
     public Long id;
     public String name;
     public String js;
-    
+
+/*    
     public static final DaoAction<Object, List<Preset>> getAll = new DaoAction<Object, List<Preset>>() {
 	@Override public List<Preset> doSql(Connection connection, Object object) throws SQLException {
 	    List<Preset> presets = new ArrayList<Preset>();
@@ -65,4 +66,5 @@ public class Preset {
 	    return null;
 	}
     };
+*/
 }
