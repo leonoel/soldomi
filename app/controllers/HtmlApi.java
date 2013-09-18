@@ -5,6 +5,7 @@ import java.io.*;
 import java.sql.SQLException;
 
 import play.*;
+import play.db.*;
 import play.data.*;
 import play.mvc.*;
 import play.mvc.Http.*;
@@ -27,8 +28,9 @@ public class HtmlApi extends Controller {
     }
 
     public static Result tunes() throws DaoException {
-	List<Tune> tunes = Tune.getAll.execute(null);
-	return ok(views.html.tunes.render(tunes));
+	TuneSet allTunes = new TuneSet();
+	TuneDao.getAllTunes.run(DB.getConnection(),allTunes);
+	return ok(views.html.tunes.render(allTunes.tunes.toList()));
     }
 
     public static Result createNew() throws DaoException {
