@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
     // Add your project dependencies here,
     javaCore,
     javaJdbc,
-    javaEbean,
+//    javaEbean,
     "org.apache.commons" % "commons-math3" % "3.1.1"
   )
 

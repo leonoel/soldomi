@@ -1,0 +1,9 @@
+[submodule "soldomi-commons"]
+	path = soldomi-commons
+	url = https://github.com/leonoel/soldomi-commons.git
+[submodule "soldomi-tune"]
+	path = soldomi-tune
+	url = https://github.com/leonoel/soldomi-tune.git
+[submodule "soldomi-nwc175"]
+	path = soldomi-nwc175
+	url = https://github.com/leonoel/soldomi-nwc175.git
