@@ -7,17 +7,7 @@ import play.*;
 import play.mvc.Result;
 import play.mvc.Controller;
 
-import models.Tune;
-import models.Staff;
-import models.Syst;
-import models.Block;
-import models.Sect;
 import models.Preset;
-import models.Symbol;
-import models.Symbol.Position;
-
-import utils.DaoAction;
-import utils.DaoAction.DaoException;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -27,7 +17,8 @@ import org.codehaus.jackson.map.SerializationConfig;
 
 public class JsonApi extends Controller {
 
-    public static Result tuneInfo(Long id) throws IOException, DaoException {
+    public static Result tuneInfo(Long id) throws IOException {
+	/*
 	Tune tune = Tune.get.execute(id);
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -67,9 +58,12 @@ public class JsonApi extends Controller {
 	mapper.writeValue(writer, tuneJson); 
 
 	return ok(writer.toString());
+	*/
+	return ok("TODO");
   }
 
-    public static Result symbols(Long tuneId, Long staffId, Long blockId) throws IOException, DaoException {
+    public static Result symbols(Long tuneId, Long staffId, Long blockId) throws IOException {
+	/*
 	List<Symbol> symbols = Symbol.getAll.execute(new Position(new Staff(staffId), new Block(blockId)));
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -122,6 +116,8 @@ public class JsonApi extends Controller {
 	mapper.writeValue(writer, symbolsJson); 
 
 	return ok(writer.toString());
+	*/
+	return ok("TODO");
   }
 
 
@@ -169,7 +165,7 @@ public class JsonApi extends Controller {
       return ok("");
   }
 
-    public static Result preset(Long id) throws DaoException {
+    public static Result preset(Long id) {
         return ok("TODO");
 /*
 	Preset preset = Preset.get.execute(id);
@@ -177,7 +173,7 @@ public class JsonApi extends Controller {
 */
     }
 
-    public static Result newPreset() throws DaoException {
+    public static Result newPreset() {
         return ok("TODO");
 /*
 	JsonNode node = request().body().asJson();
