@@ -71,7 +71,7 @@ public class HtmlApi extends Controller {
     }
 
     public static Result showTune(Long id) {
-	Tune tune = TuneDao.getTune.run(DB.getConnection(), id).value().get(0);
+	Tune tune = TuneDao.getTune.run(DB.getConnection(), id).value();
 	return ok(views.html.showTune.render(tune));
     }
 

@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.text.*;
 import play.*;
+import play.db.DB;
 import play.mvc.Result;
 import play.mvc.Controller;
 
@@ -15,9 +16,27 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
+import org.soldomi.model.tune2.TuneDao;
+import org.soldomi.model.tune2.TuneJson;
+
 public class JsonApi extends Controller {
 
-    public static Result tuneInfo(Long id) throws IOException {
+    private static String indent(JsonNode node) {
+	ObjectMapper mapper = new ObjectMapper();
+	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+	StringWriter writer = new StringWriter();
+	try {
+	    mapper.writeValue(writer, node);
+	} catch (IOException e) {
+	    return e.getMessage();
+	}
+	return writer.toString();
+    }
+
+    public static Result tuneInfo(Long id) {
+	JsonNode json = TuneJson.tuneWithSystsAndSects.write(TuneDao.getTune.run(DB.getConnection(), id).value());
+	return ok(indent(json));
+
 	/*
 	Tune tune = Tune.get.execute(id);
 
@@ -59,7 +78,6 @@ public class JsonApi extends Controller {
 
 	return ok(writer.toString());
 	*/
-	return ok("TODO");
   }
 
     public static Result symbols(Long tuneId, Long staffId, Long blockId) throws IOException {
