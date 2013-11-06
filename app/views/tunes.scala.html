@@ -1,4 +1,4 @@
-@(tunes: List[org.soldomi.model.tune.Tune])
+@(tunes: List[org.soldomi.model.tune2.Tune])
 @import helper._
 
 @main("SolDoMi - Tunes") {
@@ -16,8 +16,8 @@
       <ul>
 	@for(tune <- tunes) {
           <li>
-	    @form(action = routes.HtmlApi.deleteTune(tune.id.get)) {
-              <a href="@routes.HtmlApi.showTune(tune.id.get)">@tune.name.get</a> <input type="submit" value="Delete" />
+	    @form(action = routes.HtmlApi.deleteTune(tune.id)) {
+              <a href="@routes.HtmlApi.showTune(tune.id)">@tune.name</a> <input type="submit" value="Delete" />
 	    }
 	  </li>
 	}

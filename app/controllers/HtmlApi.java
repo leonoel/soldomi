@@ -15,7 +15,7 @@ import views.html.index;
 import views.html.tunes;
 import org.soldomi.support.nwc175.*;
 import org.soldomi.support.nwc175.model.*;
-import org.soldomi.model.tune.*;
+import org.soldomi.model.tune2.*;
 
 public class HtmlApi extends Controller {
     
@@ -24,19 +24,17 @@ public class HtmlApi extends Controller {
     }
 
     public static Result tunes() {
-	TuneSet allTunes = new TuneSet();
-	TuneDao.getAllTunes.run(DB.getConnection(), allTunes);
-	return ok(views.html.tunes.render(allTunes.tunes.toList()));
+	List<Tune> tunes = TuneDao.getAllTunes.run(DB.getConnection(), null).value();
+	return ok(views.html.tunes.render(tunes));
     }
 
     public static Result createNew() {
 	DynamicForm requestData = Form.form().bindFromRequest();
 //	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
 //        Tune tune = Tune.createNewTune(requestData.get("name"));
-	Tune tune = new Tune();
-	tune.name.set(requestData.get("name"));
-        TuneDao.insertTune.run(DB.getConnection(),tune);
-	return redirect(routes.HtmlApi.showTune(tune.id.get()));
+	Tune tune = new Tune(requestData.get("name"));
+        tune = TuneDao.insertTune.run(DB.getConnection(), tune).value();
+	return redirect(routes.HtmlApi.showTune(tune.id));
     }
 
     public static Result deleteTune(Long id) {
@@ -57,8 +55,8 @@ public class HtmlApi extends Controller {
 		NwcFileReader reader = new NwcFileReader(new FileInputStream(file));
 		NwcFile nwcfile = new NwcFile().unmarshall(reader);
 		Tune tune = NwcFileImporter.run(nwcfile);
-		TuneDao.insertTune.run(DB.getConnection(),tune);
-		return redirect(routes.HtmlApi.showTune(tune.id.get()));
+		tune = TuneDao.insertTune.run(DB.getConnection(), tune).value();
+		return redirect(routes.HtmlApi.showTune(tune.id));
 	    } catch (NwcFileException e) {
 		e.printStackTrace();
 		flash("error", "Error parsing nwc file.");
@@ -73,9 +71,7 @@ public class HtmlApi extends Controller {
     }
 
     public static Result showTune(Long id) {
-	Tune tune = new Tune();
-	tune.id.set(id);
-	TuneDao.getTune.run(DB.getConnection(),tune);
+	Tune tune = TuneDao.getTune.run(DB.getConnection(), id).value().get(0);
 	return ok(views.html.showTune.render(tune));
     }
 
