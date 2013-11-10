@@ -55,7 +55,7 @@ public class HtmlApi extends Controller {
 		NwcFileReader reader = new NwcFileReader(new FileInputStream(file));
 		NwcFile nwcfile = new NwcFile().unmarshall(reader);
 		Tune tune = NwcFileImporter.run(nwcfile);
-		tune = TuneDao.insertTune.run(DB.getConnection(), tune).value();
+		tune = TuneDao.insertTuneWithSystsAndSects.run(DB.getConnection(), tune).value();
 		return redirect(routes.HtmlApi.showTune(tune.id));
 	    } catch (NwcFileException e) {
 		e.printStackTrace();
