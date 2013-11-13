@@ -7,8 +7,8 @@ var SolDoMi = (function() {
   var ctx;
   var tune;
 
-  var renderTune = function(tune) {
-    tune = tune;
+  var renderTune = function(_tune) {
+    tune = _tune;
     var xShift          = 30;
     var lineHeight      = 80;
     var measureMinWidth = 300;
@@ -45,61 +45,48 @@ var SolDoMi = (function() {
   connectors.setType(Vex.Flow.StaveConnector.type.BRACE).setContext(ctx).draw();
 */
     // Initialization. vexFlowStaves is a table of nStaves*nBlocks vexFlowStaves
-    var staffCounter   = 0;
-    var blockCounter   = 0;
+    var nStaves = 0;
+    var nBlocks = 0;
     tune.vexFlowStaves = new Array();
+    // Count Staves and initialize vexFlowStaves array
     for(var syst in tune.systs) {
       for(var staff in tune.systs[syst].staves) {
-        tune.vexFlowStaves[staffCounter] = new Array();
-        staffCounter++;
+        tune.vexFlowStaves[nStaves] = new Array();
+        nStaves++;
       }
     }
-
+    // Count Blocks and start filling up VexFlow array
     for(var sect in tune.sects) {
       for(var block in tune.sects[sect].blocks) {
-        staffCounter = 0;
-        for(var syst in tune.systs) {
-          for(var staff in tune.systs[syst].staves) {
-            tune.vexFlowStaves[staffCounter][blockCounter] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);
- //           tune.vexFlowStaves[staffCounter][blockCounter].setContext(ctx).draw();
-            yCoor += lineHeight;
-            staffCounter++;
-          }
+        for(var staff=0;staff<nStaves;staff++) {
+          tune.vexFlowStaves[staff][nBlocks] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);
+          tune.vexFlowStaves[staff][nBlocks].setContext(ctx).draw();
+          yCoor += lineHeight;
         }
-        xCoor += tune.vexFlowStaves[0][blockCounter].width;
+        xCoor += tune.vexFlowStaves[0][nBlocks].width;
         yCoor  = 0;
-        blockCounter++;
+        nBlocks++;
       }
     }
 
 //	if(blockCounter == 0) {
     // Add First Blocks Ornaments (connectors, Clef, TimeSignature, etc)
 
-    tune.connectors = new Vex.Flow.StaveConnector(tune.vexFlowStaves[0][0],tune.vexFlowStaves[staffCounter-1][0]);
-    tune.connectors.setType(Vex.Flow.StaveConnector.type.SINGLE);
+    tune.connectors = new Vex.Flow.StaveConnector(tune.vexFlowStaves[0][0],tune.vexFlowStaves[nStaves-1][0]);
+    tune.connectors.setType(Vex.Flow.StaveConnector.type.BRACE);
     tune.connectors.setContext(ctx).draw();
-//	}
 
-    staffCounter = 0;
-    blockCounter--;
-    for(var syst in tune.systs) {
-      for(var staff in tune.systs[syst].staves) {
-        tune.vexFlowStaves[staffCounter][blockCounter].setEndBarType(Vex.Flow.Barline.type.END);
-        staffCounter++;
-      }
+//	}
+    // Put double Bars at the end of each staff
+    for(var staff=0;staff<nStaves;staff++) {
+      tune.vexFlowStaves[staff][nBlocks-1].setEndBarType(Vex.Flow.Barline.type.END);
     }
 
     // Render on Screen
-    blockCounter = 0;
-    for(var sect in tune.sects) {
-      for(var block in sect.blocks) {
-        staffCounter = 0;
-        for(var syst in tune.systs) {
-          for(var staff in syst.staves) {
-            tune.vexFlowStaff[staffCounter][blockCounter].setContext(ctx).draw();
-     //       Vex.Flow.Formatter.FormatAndDraw(ctx,tune.vexFlowStaff[staffCounter][blockCounter]);
-	  }
-	}
+    for(var block=0;block<nBlocks;block++) {
+      for(var staff=0;staff<nStaves;staff++) {
+        tune.vexFlowStaff[staff][block].setContext(ctx).draw();
+        Vex.Flow.Formatter.FormatAndDraw(ctx,tune.vexFlowStaff[staff][block]);
       }
     }
 
