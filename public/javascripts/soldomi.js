@@ -43,6 +43,10 @@ var SolDoMi = (function() {
   Vex.Flow.Formatter.FormatAndDraw(ctx, stave[0], notes);
   var connectors = new Vex.Flow.StaveConnector(stave[0],stave[1]);
   connectors.setType(Vex.Flow.StaveConnector.type.BRACE).setContext(ctx).draw();
+  stave[0].setEndBarType(Vex.Flow.Barline.type.END);
+  stave[1].setEndBarType(Vex.Flow.Barline.type.END);
+  stave[0].setContext(ctx).draw();
+  stave[1].setContext(ctx).draw();
 */
     // Initialization. vexFlowStaves is a table of nStaves*nBlocks vexFlowStaves
     var nStaves = 0;
@@ -73,13 +77,13 @@ var SolDoMi = (function() {
     // Add First Blocks Ornaments (connectors, Clef, TimeSignature, etc)
 
     tune.connectors = new Vex.Flow.StaveConnector(tune.vexFlowStaves[0][0],tune.vexFlowStaves[nStaves-1][0]);
-    tune.connectors.setType(Vex.Flow.StaveConnector.type.BRACE);
+    tune.connectors.setType(Vex.Flow.StaveConnector.type.SINGLE);
     tune.connectors.setContext(ctx).draw();
 
 //	}
     // Put double Bars at the end of each staff
     for(var staff=0;staff<nStaves;staff++) {
-      tune.vexFlowStaves[staff][nBlocks-1].setEndBarType(Vex.Flow.Barline.type.END);
+      tune.vexFlowStaves[staff][nBlocks-1].setEndBarType(Vex.Flow.Barline.type.END).setContext(ctx).draw();
     }
 
     // Render on Screen
