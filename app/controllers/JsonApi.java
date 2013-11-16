@@ -10,11 +10,11 @@ import play.mvc.Controller;
 
 import models.Preset;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.soldomi.model.tune2.TuneDao;
 import org.soldomi.model.tune2.TuneJson;
@@ -23,7 +23,7 @@ public class JsonApi extends Controller {
 
     private static String indent(JsonNode node) {
 	ObjectMapper mapper = new ObjectMapper();
-	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+	mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 	StringWriter writer = new StringWriter();
 	try {
 	    mapper.writeValue(writer, node);
@@ -41,7 +41,7 @@ public class JsonApi extends Controller {
 	Tune tune = Tune.get.execute(id);
 
 	ObjectMapper mapper = new ObjectMapper();
-	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+	mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
 	ObjectNode tuneJson = mapper.createObjectNode();
 	tuneJson.put("name", tune.name);
@@ -85,7 +85,7 @@ public class JsonApi extends Controller {
 	List<Symbol> symbols = Symbol.getAll.execute(new Position(new Staff(staffId), new Block(blockId)));
 
 	ObjectMapper mapper = new ObjectMapper();
-	mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+	mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
 	ArrayNode symbolsJson = mapper.createArrayNode();
 	for (Symbol symbol : symbols) {
@@ -152,7 +152,7 @@ public class JsonApi extends Controller {
       .findList();
 
     ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+    mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
     ObjectNode blockJson = Json.newObject();
     blockJson.put("blockId",          position);
