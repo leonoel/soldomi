@@ -48,51 +48,57 @@ var SolDoMi = (function() {
   stave[0].setContext(ctx).draw();
   stave[1].setContext(ctx).draw();
 */
-    // Initialization. vexFlowStaves is a table of nStaves*nBlocks vexFlowStaves
-    var nStaves = 0;
-    var nBlocks = 0;
-    tune.vexFlowStaves = new Array();
-    // Count Staves and initialize vexFlowStaves array
-    for(var syst in tune.systs) {
-      for(var staff in tune.systs[syst].staves) {
-        tune.vexFlowStaves[nStaves] = new Array();
-        nStaves++;
-      }
-    }
+    // Initialization. measuresById is a table of nStaves*nBlocks vexFlowStaves
+    tune.measuresById   = {};
+    tune.measuresByCoord = new Array();
+    // Count Staves and initialize measuresById array
+    $.each(tune.systs,function(systNb,syst) {
+      $.each(syst.staves,function(staffNb,staff) {
+        tune.measuresById[staff.id] = {};
+	tune.measuresByCoord.push(new Array());
+      });
+    });
     // Count Blocks and start filling up VexFlow array
-    for(var sect in tune.sects) {
-      for(var block in tune.sects[sect].blocks) {
-        for(var staff=0;staff<nStaves;staff++) {
-          tune.vexFlowStaves[staff][nBlocks] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);
-          tune.vexFlowStaves[staff][nBlocks].setContext(ctx).draw();
-          yCoor += lineHeight;
-        }
-        xCoor += tune.vexFlowStaves[0][nBlocks].width;
+    var staffCounter = 0;
+    $.each(tune.sects,function(sectNb,sect){
+      $.each(sect.blocks,function(blockNb,block) {
+        $.each(tune.systs,function(systNb,syst) {
+          $.each(syst.staves,function(staffNb,staff) {
+            tune.measuresById[staff.id][block.id] = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);
+  	    tune.measuresByCoord[staffCounter].push(tune.measuresById[staff.id][block.id]);
+            yCoor += lineHeight;
+	    staffCounter++;
+          });
+        });
+        xCoor += tune.measuresByCoord[0][blockNb].width;
         yCoor  = 0;
-        nBlocks++;
-      }
-    }
-
-//	if(blockCounter == 0) {
+	staffCounter = 0;
+        $.getJSON("/block/"+block.id+"/symbols/json",renderBlock);
+      });
+    });
     // Add First Blocks Ornaments (connectors, Clef, TimeSignature, etc)
-
-    tune.connectors = new Vex.Flow.StaveConnector(tune.vexFlowStaves[0][0],tune.vexFlowStaves[nStaves-1][0]);
+    tune.connectors = new Vex.Flow.StaveConnector(tune.measuresByCoord[0][0],tune.measuresByCoord[tune.measuresByCoord.length-1][0]);
     tune.connectors.setType(Vex.Flow.StaveConnector.type.SINGLE);
     tune.connectors.setContext(ctx).draw();
-
-//	}
     // Put double Bars at the end of each staff
-    for(var staff=0;staff<nStaves;staff++) {
-      tune.vexFlowStaves[staff][nBlocks-1].setEndBarType(Vex.Flow.Barline.type.END).setContext(ctx).draw();
-    }
+    $.each(tune.measuresByCoord,function(i,staff){
+             staff[staff.length-1].setEndBarType(Vex.Flow.Barline.type.END).setContext(ctx).draw();
+    });
 
     // Render on Screen
+    $.each(tune.measuresByCoord,function(i,staff){
+	$.each(staff,function(j,block) {
+          block.setContext(ctx).draw();
+          Vex.Flow.Formatter.FormatAndDraw(ctx,block);
+        });
+    });
+/*	  
     for(var block=0;block<nBlocks;block++) {
       for(var staff=0;staff<nStaves;staff++) {
         tune.vexFlowStaff[staff][block].setContext(ctx).draw();
-        Vex.Flow.Formatter.FormatAndDraw(ctx,tune.vexFlowStaff[staff][block]);
       }
     }
+*/
 
 /*
         var lines = new Array(); 
@@ -113,6 +119,24 @@ var SolDoMi = (function() {
 */
   }
 
+  function renderBlock(symbols) {
+   console.log('ici');
+    var blockId,staffId;
+    $.each(symbols,function(i,symbol) {
+      staffId = symbol.staffId; 
+      blockId = symbol.blockId; 
+      var measure = tune.measuresById[staffId][blockId];
+      renderSymbol(symbol,measure);
+    });
+    $.each(tune.measuresById,function(staffNb,staff) {
+	staff[blockId].setContext(ctx).draw();
+    });
+    return;
+  }
+
+  function renderSymbol(symbol,measure) {
+    return;  
+  }
 
   // Public
 
