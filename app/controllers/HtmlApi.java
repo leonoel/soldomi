@@ -24,7 +24,7 @@ public class HtmlApi extends Controller {
     }
 
     public static Result tunes() {
-	List<Tune> tunes = TuneDao.getAllTunes.run(DB.getConnection(), null).value();
+	List<Tune> tunes = TuneDao.getAllTunes.runInTransaction(DB.getConnection(), null).value();
 	return ok(views.html.tunes.render(tunes));
     }
 
@@ -33,7 +33,7 @@ public class HtmlApi extends Controller {
 //	Tune tune = Tune.insert.execute(Tune.makeBlank(requestData.get("name")));
 //        Tune tune = Tune.createNewTune(requestData.get("name"));
 	Tune tune = new Tune(requestData.get("name"));
-        tune = TuneDao.insertTune.run(DB.getConnection(), tune).value();
+        tune = TuneDao.insertTune.runInTransaction(DB.getConnection(), tune).value();
 	return redirect(routes.HtmlApi.showTune(tune.id));
     }
 
@@ -55,7 +55,7 @@ public class HtmlApi extends Controller {
 		NwcFileReader reader = new NwcFileReader(new FileInputStream(file));
 		NwcFile nwcfile = new NwcFile().unmarshall(reader);
 		Tune tune = NwcFileImporter.run(nwcfile);
-		tune = TuneDao.insertTuneWithSystsAndSects.run(DB.getConnection(), tune).value();
+		tune = TuneDao.insertTuneWithSystsAndSects.runInTransaction(DB.getConnection(), tune).value();
 		return redirect(routes.HtmlApi.showTune(tune.id));
 	    } catch (NwcFileException e) {
 		e.printStackTrace();
@@ -71,7 +71,7 @@ public class HtmlApi extends Controller {
     }
 
     public static Result showTune(Long id) {
-	Tune tune = TuneDao.getTune.run(DB.getConnection(), id).value();
+	Tune tune = TuneDao.getTune.runInTransaction(DB.getConnection(), id).value();
 	return ok(views.html.showTune.render(tune));
     }
 
