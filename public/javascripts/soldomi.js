@@ -217,7 +217,12 @@ var SolDoMi = (function() {
 	// TODO
 	var formatAccidental = function(accidental) {
 	    switch(accidental) {
-	    case "AUTO": return "";
+	    case "AUTO":    return "";
+	    case "SHARP":   return "#";
+	    case "FLAT":    return "b";
+	    case "NATURAL": return "n";
+            case "DOUBLE_SHARP": return "##";
+            case "DOUBLE_FLAT":  return "bb";
 	    default: 
 		console.log("Accidental problem: ", accidental);
 		break;
@@ -272,7 +277,7 @@ var SolDoMi = (function() {
 		"KEY_SIGNATURE": "KEY_SIGNATURE",
 		"STANDARD_TIME_SIGNATURE": "TIME_SIGNATURE",
 		"ALLA_BREVE": "TIME_SIGNATURE",
-		"COMMON_TIME": "TIME_SIGNATURE"
+		"COMMON_TIME": "TIME_SIGNATURE"// C ou CBarre... TODO
 	    };
 	    return function(symbolType) {
 		return roles[symbolType];
