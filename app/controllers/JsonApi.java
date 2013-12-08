@@ -34,12 +34,12 @@ public class JsonApi extends Controller {
     }
 
     public static Result tuneInfo(Long id) {
-	JsonNode json = TuneJson.tuneWithSystsAndSects.write(TuneDao.getTuneWithSystsAndSects.run(DB.getConnection(), id).value());
+	JsonNode json = TuneJson.tuneWithSystsAndSects.write(TuneDao.getTuneWithSystsAndSects.runInTransaction(DB.getConnection(), id).value());
 	return ok(indent(json));
   }
 
     public static Result symbols(Long blockId) {
-	return ok(indent(TuneJson.symbols.write(TuneDao.getBlockSymbolsFull.run(DB.getConnection(), blockId).value())));
+	return ok(indent(TuneJson.symbols.write(TuneDao.getBlockSymbolsFull.runInTransaction(DB.getConnection(), blockId).value())));
   }
 
 
