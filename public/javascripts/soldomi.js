@@ -156,8 +156,10 @@ var SolDoMi = (function() {
 		measure.addTimeSignature(formatTimeSignature(symbol));
 		break;
 	    case "NOTE":
+		measure.segments.push(createNewNote(symbol));
+		break;
 	    case "REST":
-		measure.segments.push(createNewSegment(symbol));
+		measure.segments.push(createNewRest(symbol));
 		break;
 	    default:
 		console.log("Error, wrong type: ",type);
@@ -183,22 +185,33 @@ var SolDoMi = (function() {
 	    return count+"/"+value;
 	}
 
-	var createNewSegment = (function() {
+	var createNewRest = (function() {
+	    var durations = {
+		"WHOLE_R": "1r",
+		"HALF_R": "2r",
+		"QUARTER_R": "4r",
+		"EIGHTH_R": "8r",
+		"SIXTEENTH_R": "16r",
+		"THIRTY_SECOND_R": "32r",
+		"SIXTY_FOURTH_R": "64r"
+	    };
+	    return function(symbol) {
+		return new Vex.Flow.StaveNote({
+		    keys: ["b/4"],
+		    duration: durations[symbol.type]
+		});
+	    }
+	})();
+
+	var createNewNote = (function() {
 	    var durations = {
 		"WHOLE": "1n",
-		"WHOLE_R": "1r",
 		"HALF": "2n",
-		"HALF_R": "2r",
 		"QUARTER": "4n",
-		"QUARTER_R": "4r",
 		"EIGHTH": "8n",
-		"EIGHTH_R": "8r",
 		"SIXTEENTH": "16n",
-		"SIXTEENTH_R": "16r",
 		"THIRTY_SECOND": "32n",
-		"THIRTY_SECOND_R": "32r",
-		"SIXTY_FOURTH": "64n",
-		"SIXTY_FOURTH_R": "64r"
+		"SIXTY_FOURTH": "64n"
 	    };
 	    return function (symbol) {
 		var key = symbol.note.pitch.name.toLowerCase()+formatAccidental(symbol.note.accidental)
@@ -280,7 +293,7 @@ var SolDoMi = (function() {
 		"COMMON_TIME": "TIME_SIGNATURE"// C ou CBarre... TODO
 	    };
 	    return function(symbolType) {
-		return roles[symbolType];
+		return (symbolType in roles) ? roles[symbolType] : "UNKNOWN";
 	    }
 	})();
 
