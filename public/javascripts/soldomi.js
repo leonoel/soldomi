@@ -206,7 +206,7 @@ var SolDoMi = (function() {
 
 		return new Vex.Flow.StaveNote(
 		    { keys :    [key],
-		      duration: durations[symbol.type],
+		      duration: durations[symbol.type], // Watch Out for Tuplets !!!
 		      clef:     tune.staffClefManagers[symbol.staffId].getClefAtTime(symbol.startTime)
 		      //stem_direction: -1
       		    });
@@ -238,9 +238,9 @@ var SolDoMi = (function() {
 
 	var symbolOrdering = (function() {
 	    var ordering = {
-		"TIME_SIGNATURE": 1,
+		"CLEF": 1,
 		"KEY_SIGNATURE": 2,
-		"CLEF": 3,
+		"TIME_SIGNATURE": 3,
 		"REST": 4,
 		"NOTE": 4
 	    };
