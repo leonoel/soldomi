@@ -197,10 +197,11 @@ var SolDoMi = (function() {
 	    };
 	    return function(symbol) {
 		return new Vex.Flow.StaveNote({
+		    keys: ["b/4"],
 		    duration: durations[symbol.type]
 		});
 	    }
-	});
+	})();
 
 	var createNewNote = (function() {
 	    var durations = {
