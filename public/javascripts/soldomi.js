@@ -6,6 +6,7 @@ var SolDoMi = (function() {
     var renderer;
     var ctx;
     var tune;
+    var keySettingWidth = 8;
 
     var StaffClefManager = function() {
 	var clefs = [];
@@ -95,7 +96,6 @@ var SolDoMi = (function() {
 	var xShift          = 30;
 	var lineHeight      = 80;
 	var measureMinWidth = 300;
-	var keySettingWidth = 80;
 	var xCoor = xShift, yCoor = 0;
 
 	/*
@@ -138,7 +138,12 @@ var SolDoMi = (function() {
 	var renderBlock = function(symbols) {
 	    $.each(symbols,function(i,symbol) {
 		var measure = tune.measuresById[symbol.blockId][symbol.staffId];
-		renderSymbol(symbol, measure);
+		var isSignature = renderSymbol(symbol, measure);
+	//	if(isSignature) {
+	//	  $.each(tune.measuresById[symbol.blockId],function(j,m) {
+	//	    m.width += keySettingWidth;
+   	//	  });
+	//	}
 	    });
 	}
 
@@ -148,23 +153,29 @@ var SolDoMi = (function() {
 		var clef = symbolClef(symbol.type);
 		tune.staffClefManagers[symbol.staffId].addClefAtTime(clef, symbol.startTime);
 		measure.addClef(clef);
+		return true;
 		break;
 	    case "KEY_SIGNATURE":  
 		//	measure.addKeySignature(formatKeySignature(symbol));
+		// return true;
 		break;
 	    case "TIME_SIGNATURE": 
 		measure.addTimeSignature(formatTimeSignature(symbol));
+		return true;
 		break;
 	    case "NOTE":
 		measure.segments.push(createNewNote(symbol));
+		return false;
 		break;
 	    case "REST":
 		measure.segments.push(createNewRest(symbol));
+		return false;
 		break;
 	    default:
 		console.log("Error, wrong type: ",type);
+		return false;
 	    }
-	    return;  
+	    return false;  
 	}
 
 	var formatKeySignature = function (symbol) {
@@ -217,12 +228,16 @@ var SolDoMi = (function() {
 		var key = symbol.note.pitch.name.toLowerCase()+formatAccidental(symbol.note.accidental)
 		    +'/'+symbol.note.pitch.octave;
 
-		return new Vex.Flow.StaveNote(
+		var note = new Vex.Flow.StaveNote(
 		    { keys :    [key],
 		      duration: durations[symbol.type], // Watch Out for Tuplets !!!
 		      clef:     tune.staffClefManagers[symbol.staffId].getClefAtTime(symbol.startTime)
 		      //stem_direction: -1
       		    });
+		if(isAccidental(symbol)) { 
+		  note.addAccidental(0,new Vex.Flow.Accidental(formatAccidental(symbol.note.accidental)));
+		}
+		return note;
 	    }
 	})();
 
@@ -242,6 +257,10 @@ var SolDoMi = (function() {
 	    }
 	}
 
+	// TODO, adapt for AUTO case
+ 	var isAccidental = function(symbol) {
+	  return symbol.note.accidental != "AUTO";
+	}
 	var symbolClef = (function() {
 	    var clefs = {
 		"TREBLE_CLEF": "treble",
@@ -307,7 +326,7 @@ var SolDoMi = (function() {
 		var measureX = tune.measuresByCoord.push(new Array())-1; // push method of Array returns the length of the new Array. measureX contains the correct indice
 		$.each(tune.systs,function(systNb,syst) {
 		    $.each(syst.staves,function(staffNb,staff) {
-			var measure = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth).setContext(ctx).draw();
+			var measure = new Vex.Flow.Stave(xCoor,yCoor,measureMinWidth);//.setContext(ctx).draw();
 			measure.segments = [];
 			tune.measuresById[block.id][staff.id] = measure;
   			tune.measuresByCoord[measureX].push(measure); // Reference to the VexFlow object in a cartesian reference.
@@ -356,7 +375,7 @@ var SolDoMi = (function() {
 	    $.each(blockIds, function(i, blockId) {
 		$.each(staffIds, function(j, staffId) {
 		    var measure = tune.measuresById[blockId][staffId];
-		    measure.draw();
+		    measure.setContext(ctx).draw();
 		    Vex.Flow.Formatter.FormatAndDraw(ctx, measure, measure.segments, true);
 		});
 	    });
